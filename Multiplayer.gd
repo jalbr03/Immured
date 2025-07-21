@@ -85,15 +85,16 @@ func connect_to_server(address, port):
 		if err != OK:
 			if err != ERR_BUSY:
 				print("Handshake failed")
+				connectionFailed = true
 				return err
 		else:
 			print("Handshake success")
+			connectionFailed = false
 		
 		var peer = ENetMultiplayerPeer.new()
 		err = peer.create_client(address, port, 0, 0, 0, Noray.local_port)
 		
 		if err != OK:
-			connectionFailed = true
 			return err
 		
 		multiplayer.multiplayer_peer = peer
