@@ -25,12 +25,6 @@ func _process(delta: float) -> void:
 	if(Multiplayer.connectionFailed):
 		Multiplayer.connectionFailed = false
 		multiplayer_ui.show()
-	#if(!Multiplayer.is_host):
-		#return
-	
-	#if(Input.is_action_just_pressed("ui_accept")):
-		#SpawnRunner.rpc(multiplayer.get_unique_id())
-
 
 @rpc("authority", "call_local", "reliable")
 func changeLevel(pid, NextLevel):
@@ -56,7 +50,10 @@ func _on_host_pressed():
 		func(pid):
 			print("Peer " + str(pid) + " has joined the game!")
 			Multiplayer.addClient(pid)
-			$Level/PlayerTextSpawner.spawn(pid)
+			if(Multiplayer.inGame):
+				pass
+			else:
+				$Level/PlayerTextSpawner.spawn(pid)
 	)
 	
 	Multiplayer.addClient(multiplayer.get_unique_id())
@@ -70,7 +67,6 @@ func _on_join_pressed():
 
 func add_player_text_box(pid):
 	var textBox = PLAYER_TEXTBOX.instantiate()
-	#textBox.text += str(Multiplayer.clients.size())
 	textBox.set_multiplayer_authority(pid)
 	textBox.position = Vector2(20, 40*Multiplayer.clients.size())
 	return textBox

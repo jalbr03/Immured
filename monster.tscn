@@ -8,6 +8,9 @@
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath("PlayerName:text")
+properties/1/spawn = true
+properties/1/replication_mode = 2
 
 [node name="Monster" type="CharacterBody2D"]
 collision_layer = 2
@@ -24,3 +27,19 @@ offset_bottom = 10.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_s3gyj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -25.0
+offset_top = -50.0
+offset_right = 24.0
+offset_bottom = -10.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="PlayerName" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "player"
+horizontal_alignment = 1

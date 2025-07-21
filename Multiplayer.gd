@@ -12,16 +12,22 @@ var external_oid = ""
 
 var clients = []
 var clientNames := {}
+var localPlayerName = "player"
 
 func addClient(client):
 	clients.append(client)
 	clientNames[client] = str(client)
+
+#func removeClient(client):
+	#clients.remove_at(clients.find(client))
+	#clientNames.erase(client)
 
 func getClientIndex(index):
 	if(is_host):
 		return clientNames[clientNames.keys()[index]]
 	
 func setClientIndex(index, value):
+	
 	if(is_host):
 		clientNames[clientNames.keys()[index]] = value
 

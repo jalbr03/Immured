@@ -9,6 +9,7 @@ func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 
 func _ready():
+	$VBoxContainer/PlayerName.text = Multiplayer.localPlayerName
 	if !is_multiplayer_authority():
 		$ColorRect.modulate = Color.RED
 

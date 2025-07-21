@@ -13,8 +13,9 @@ func _ready():
 		position.y = 40*players
 	
 	if !is_multiplayer_authority():
-		modulate = Color.RED
 		editable = false
 
 func _process(delta: float) -> void:
+	if(is_multiplayer_authority()):
+		Multiplayer.localPlayerName = text
 	Multiplayer.setClientIndex(selfIndex, text)
