@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cotpmj4tes8la"]
+
+[ext_resource type="Script" uid="uid://bcsbpt35h0udc" path="res://Levels/level_1.gd" id="1_3anf8"]
+[ext_resource type="Texture2D" uid="uid://brvvwb8r3odjb" path="res://icon.svg" id="1_w77jt"]
+
+[node name="Level1" type="Node2D"]
+script = ExtResource("1_3anf8")
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(64, 82)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(167, 307)
+texture = ExtResource("1_w77jt")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(578, 322)

@@ -1,0 +1,85 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgq5r61i6wbfl"]
+
+[ext_resource type="Script" uid="uid://cs3r50wrkifvs" path="res://Game.gd" id="1_80nbo"]
+[ext_resource type="Script" uid="uid://crcws7shn2oi7" path="res://StartGame.gd" id="2_e2o6t"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_80nbo")
+
+[node name="Level" type="Node2D" parent="."]
+
+[node name="StartGame" type="Button" parent="Level"]
+offset_left = 247.0
+offset_top = 281.0
+offset_right = 343.0
+offset_bottom = 312.0
+text = "Start Game"
+script = ExtResource("2_e2o6t")
+
+[node name="Camera2D" type="Camera2D" parent="Level"]
+position = Vector2(290, 163)
+zoom = Vector2(2, 2)
+
+[node name="PlayerTextSpawner" type="MultiplayerSpawner" parent="Level"]
+spawn_path = NodePath("..")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Multiplayer" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Multiplayer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -102.0
+offset_top = -46.5
+offset_right = 102.0
+offset_bottom = 46.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Multiplayer Arena Shooter"
+
+[node name="Host" type="Button" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Host"
+
+[node name="CopyOID" type="Button" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Copy OID"
+
+[node name="HSeparator" type="HSeparator" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="OIDInput" type="LineEdit" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Host OID"
+
+[node name="Join" type="Button" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Join"
+
+[node name="OID" type="Label" parent="UI/Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Loading..."
+horizontal_alignment = 1
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://svpbsj0eu6fp")
+spawn_path = NodePath("..")
+
+[connection signal="button_up" from="Level/StartGame" to="Level/StartGame" method="_on_button_up"]
+[connection signal="pressed" from="UI/Multiplayer/VBoxContainer/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="UI/Multiplayer/VBoxContainer/CopyOID" to="." method="_on_copy_oid_pressed"]
+[connection signal="pressed" from="UI/Multiplayer/VBoxContainer/Join" to="." method="_on_join_pressed"]
