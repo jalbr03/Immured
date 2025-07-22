@@ -1,0 +1,81 @@
+extends Node2D
+
+@export var nextStepPoint:Vector2
+@export var legDirection:int
+var inputDirection = 0
+var lastStepPoint:Vector2
+var currentStepPoint:Vector2
+var legEnabled = true
+
+var stepDist = 110+randf_range(-20, 80)
+
+@onready var lastPosition = global_position
+
+var animateLeg = false
+var animateTime = 0
+var animationSpeed = 0.005
+var animateToPoint:Vector2
+enum floorCastStates {castOut, castIn, castInLong}
+var floorCastState = floorCastStates.castOut
+
+func _ready() -> void:
+	nextStepPoint = $Target.global_position
+	currentStepPoint = $Target.global_position
+	lastStepPoint = $Target.global_position
+	
+	#if(!is_multiplayer_authority()):
+		#get_modification_stack().enabled = false
+
+func _process(delta: float) -> void:
+	#if(!legEnabled):
+		#return
+	$Target.global_position = currentStepPoint
+	#var input = global_position - lastPosition#Input.get_axis("Left", "Right")
+	
+	if(legDirection == inputDirection):
+		match floorCastState:
+			floorCastStates.castOut:
+				$FloorCast.target_position.x = stepDist*legDirection*1.5
+				if(!$FloorCast.is_colliding()):
+					floorCastState = floorCastStates.castIn
+			floorCastStates.castIn:
+				$FloorCast.position.x = stepDist*legDirection
+				$FloorCast.target_position.x = -stepDist*legDirection*1.5
+				if(!$FloorCast.is_colliding()):
+					floorCastState = floorCastStates.castInLong
+			floorCastStates.castInLong:
+				$FloorCast.position.x = stepDist*legDirection
+				$FloorCast.target_position.x = -stepDist*legDirection*2
+				$FloorCast.target_position.y = 200
+				#if($FloorCast.is_colliding()):
+					#floorCastState = floorCastStates.castOut
+	else:
+		floorCastState = floorCastStates.castOut
+		$FloorCast.position.x = 0
+		$FloorCast.target_position.x = 0
+		$FloorCast.target_position.y = 100
+	
+	nextStepPoint = $FloorCast.get_collision_point()
+	
+	if(currentStepPoint.distance_to(nextStepPoint) > stepDist):
+		animateLeg = true
+		animateToPoint = nextStepPoint
+	
+	if(animateLeg):
+		var animatedStep = animateToPoint
+		var animatedLastStep = lastStepPoint
+		var upVector = (Vector2.UP.rotated(global_rotation)*100)
+		if(animateTime < 0.5):
+			animatedStep = animateToPoint+upVector
+		else:
+			animatedLastStep = lastStepPoint+upVector
+			animatedStep = animateToPoint
+		currentStepPoint = lerp(animatedLastStep, animatedStep, animateTime)
+		
+		animateTime += animationSpeed
+		if(animateTime >= 1):
+			animateLeg = false
+			animateTime = 0
+			lastStepPoint = currentStepPoint
+	
+	lastPosition = global_position

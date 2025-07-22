@@ -10,11 +10,8 @@ script = ExtResource("1_3anf8")
 [node name="SpawnPoint" type="Marker2D" parent="."]
 position = Vector2(322, 524)
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(578, 322)
-
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(594, 633)
+position = Vector2(550, 633)
 scale = Vector2(66.605, 1)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D"]
@@ -23,7 +20,7 @@ offset_top = -10.0
 offset_right = 30.0
 offset_bottom = 30.0
 scale = Vector2(0.501466, 0.501466)
-color = Color(0.314316, 0.314316, 0.314316, 1)
+color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 shape = SubResource("RectangleShape2D_w77jt")
@@ -39,7 +36,7 @@ offset_top = -10.0
 offset_right = 30.0
 offset_bottom = 30.0
 scale = Vector2(0.501466, 0.501466)
-color = Color(0.314316, 0.314316, 0.314316, 1)
+color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
 shape = SubResource("RectangleShape2D_w77jt")
@@ -55,7 +52,7 @@ offset_top = -10.0
 offset_right = 30.0
 offset_bottom = 30.0
 scale = Vector2(0.501466, 0.501466)
-color = Color(0.314316, 0.314316, 0.314316, 1)
+color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D5"]
 shape = SubResource("RectangleShape2D_w77jt")
@@ -71,7 +68,7 @@ offset_top = -10.0
 offset_right = 30.0
 offset_bottom = 30.0
 scale = Vector2(0.501466, 0.501466)
-color = Color(0.314316, 0.314316, 0.314316, 1)
+color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
 shape = SubResource("RectangleShape2D_w77jt")
@@ -87,7 +84,7 @@ offset_top = -10.0
 offset_right = 30.0
 offset_bottom = 30.0
 scale = Vector2(0.501466, 0.501466)
-color = Color(0.314316, 0.314316, 0.314316, 1)
+color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
 shape = SubResource("RectangleShape2D_w77jt")

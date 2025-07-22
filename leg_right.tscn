@@ -1,0 +1,106 @@
+[gd_scene load_steps=6 format=3 uid="uid://be6yb04rprtfi"]
+
+[ext_resource type="Script" uid="uid://cihnj4k5yibvw" path="res://Leg.gd" id="1_n3l3r"]
+
+[sub_resource type="SkeletonModification2DCCDIK" id="SkeletonModification2DCCDIK_n3l3r"]
+resource_local_to_scene = true
+target_nodepath = NodePath("../Target")
+tip_nodepath = NodePath("UpperLeg/MidLeg/LowerLeg/Foot")
+ccdik_data_chain_length = 3
+joint_data/0/bone_index = 0
+joint_data/0/bone2d_node = NodePath("UpperLeg")
+joint_data/0/rotate_from_joint = false
+joint_data/0/enable_constraint = false
+joint_data/0/editor_draw_gizmo = true
+joint_data/1/bone_index = 1
+joint_data/1/bone2d_node = NodePath("UpperLeg/MidLeg")
+joint_data/1/rotate_from_joint = false
+joint_data/1/enable_constraint = true
+joint_data/1/constraint_angle_min = -20.0
+joint_data/1/constraint_angle_max = 136.167
+joint_data/1/constraint_angle_invert = true
+joint_data/1/constraint_in_localspace = true
+joint_data/1/editor_draw_gizmo = true
+joint_data/2/bone_index = 2
+joint_data/2/bone2d_node = NodePath("UpperLeg/MidLeg/LowerLeg")
+joint_data/2/rotate_from_joint = false
+joint_data/2/enable_constraint = true
+joint_data/2/constraint_angle_min = -30.0
+joint_data/2/constraint_angle_max = 220.0
+joint_data/2/constraint_angle_invert = true
+joint_data/2/constraint_in_localspace = true
+joint_data/2/editor_draw_gizmo = true
+
+[sub_resource type="SkeletonModificationStack2D" id="SkeletonModificationStack2D_evaa3"]
+resource_local_to_scene = true
+enabled = true
+modification_count = 1
+modifications/0 = SubResource("SkeletonModification2DCCDIK_n3l3r")
+
+[sub_resource type="Gradient" id="Gradient_n3l3r"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_evaa3"]
+gradient = SubResource("Gradient_n3l3r")
+
+[node name="LegRight" type="Node2D"]
+script = ExtResource("1_n3l3r")
+legDirection = 1
+
+[node name="Target" type="Marker2D" parent="."]
+position = Vector2(209, 1)
+
+[node name="Skeleton2D" type="Skeleton2D" parent="."]
+modification_stack = SubResource("SkeletonModificationStack2D_evaa3")
+
+[node name="UpperLeg" type="Bone2D" parent="Skeleton2D"]
+rest = Transform2D(1, 0, 0, 1, 0, 0)
+metadata/_local_pose_override_enabled_ = true
+
+[node name="MidLeg" type="Bone2D" parent="Skeleton2D/UpperLeg"]
+position = Vector2(87, -26)
+rest = Transform2D(1, 0, 0, 1, 87, -26)
+metadata/_local_pose_override_enabled_ = true
+
+[node name="LowerLeg" type="Bone2D" parent="Skeleton2D/UpperLeg/MidLeg"]
+position = Vector2(74, 21)
+rest = Transform2D(1, 0, 0, 1, 74, 21)
+metadata/_local_pose_override_enabled_ = true
+
+[node name="Foot" type="Bone2D" parent="Skeleton2D/UpperLeg/MidLeg/LowerLeg"]
+position = Vector2(34, 64)
+rest = Transform2D(1, 0, 0, 1, 34, 64)
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Skeleton2D/UpperLeg/MidLeg/LowerLeg"]
+remote_path = NodePath("../../../../../SpriteLowerLeg")
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Skeleton2D/UpperLeg/MidLeg"]
+remote_path = NodePath("../../../../SpriteMidLeg")
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Skeleton2D/UpperLeg"]
+remote_path = NodePath("../../../SpriteUpperLeg")
+
+[node name="SpriteUpperLeg" type="Polygon2D" parent="."]
+rotation = -0.24815
+scale = Vector2(1, 1)
+texture = SubResource("GradientTexture2D_evaa3")
+polygon = PackedVector2Array(2.06574, -7.33033, 111.72, -29.4013, 15.0001, 5.00004, -2.66325, 1.70507)
+
+[node name="SpriteMidLeg" type="Polygon2D" parent="."]
+position = Vector2(77.9492, -46.5717)
+rotation = -0.284491
+scale = Vector2(1, 1)
+texture = SubResource("GradientTexture2D_evaa3")
+polygon = PackedVector2Array(79.9359, 27.0784, 17.2845, -4.95818, 1.24844, -0.0742264, 15.1758, 10.0272)
+
+[node name="SpriteLowerLeg" type="Polygon2D" parent="."]
+position = Vector2(154.869, -47.1853)
+rotation = -0.35511
+scale = Vector2(1, 1)
+texture = SubResource("GradientTexture2D_evaa3")
+polygon = PackedVector2Array(1.79459, 17.7948, 39.3687, 70.6468, 13.817, 12.7481, -7.65446, -17.0012)
+
+[node name="FloorCast" type="RayCast2D" parent="."]
+target_position = Vector2(0, 100)
+hit_from_inside = true
