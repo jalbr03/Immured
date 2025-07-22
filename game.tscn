@@ -23,9 +23,6 @@ zoom = Vector2(2, 2)
 [node name="PlayerTextSpawner" type="MultiplayerSpawner" parent="Level"]
 spawn_path = NodePath("..")
 
-[node name="SpawnPoint" type="Marker2D" parent="Level"]
-position = Vector2(64, 82)
-
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Multiplayer" type="Control" parent="UI"]

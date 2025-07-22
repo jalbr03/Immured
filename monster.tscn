@@ -43,3 +43,6 @@ alignment = 1
 layout_mode = 2
 text = "player"
 horizontal_alignment = 1
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(0, 100)

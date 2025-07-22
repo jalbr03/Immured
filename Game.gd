@@ -22,7 +22,7 @@ func _ready():
 	oid_lbl.text = Noray.oid
 
 func _process(delta: float) -> void:
-	
+	return
 	if(Multiplayer.connectionFailed):
 		Multiplayer.connectionFailed = false
 		multiplayer_ui.show()
