@@ -12,7 +12,7 @@ position = Vector2(322, 524)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(550, 633)
-scale = Vector2(66.605, 1)
+scale = Vector2(66.605, 3.155)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D"]
 offset_left = -10.0
@@ -28,7 +28,7 @@ shape = SubResource("RectangleShape2D_w77jt")
 [node name="StaticBody2D2" type="StaticBody2D" parent="."]
 position = Vector2(-18, 452)
 rotation = 1.19549
-scale = Vector2(19.5323, 1.06331)
+scale = Vector2(19.5323, 3.155)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D2"]
 offset_left = -10.0
@@ -44,7 +44,7 @@ shape = SubResource("RectangleShape2D_w77jt")
 [node name="StaticBody2D5" type="StaticBody2D" parent="."]
 position = Vector2(1053, 456)
 rotation = 2.06722
-scale = Vector2(19.5091, 1.26961)
+scale = Vector2(19.5091, 3.155)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D5"]
 offset_left = -10.0
@@ -60,7 +60,7 @@ shape = SubResource("RectangleShape2D_w77jt")
 [node name="StaticBody2D3" type="StaticBody2D" parent="."]
 position = Vector2(58, 155)
 rotation = 2.48607
-scale = Vector2(19.5323, 1.06331)
+scale = Vector2(19.5323, 3.155)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D3"]
 offset_left = -10.0
@@ -76,7 +76,7 @@ shape = SubResource("RectangleShape2D_w77jt")
 [node name="StaticBody2D4" type="StaticBody2D" parent="."]
 position = Vector2(396, 25)
 rotation = 3.0664
-scale = Vector2(19.5323, 1.06331)
+scale = Vector2(19.5323, 3.155)
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody2D4"]
 offset_left = -10.0
