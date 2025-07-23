@@ -5,7 +5,9 @@ var startGlobalPosition
 var globalPositions = []
 @onready var web_check: RayCast2D = $webCheck
 @onready var un_wind_check: RayCast2D = $unWindCheck
+const WEB_COLLISION = preload("res://web_collision.tscn")
 var webCheckMinDistance = 20
+var isSetWeb = false
 
 func _ready() -> void:
 	startGlobalPosition = global_position
@@ -13,11 +15,14 @@ func _ready() -> void:
 		globalPositions.append(to_global(point))
 
 func _process(delta: float) -> void:
-	if(!is_multiplayer_authority()):
+	if(!is_multiplayer_authority() || isSetWeb):
 		return
 	global_rotation = 0
-	
+	updateWeb()
+
+func updateWeb():
 	web_check.target_position = points[1]-(points[1].normalized()*10)
+	web_check.force_raycast_update()
 	if(points.size() > 2):
 		un_wind_check.position = points[0]
 		un_wind_check.target_position = points[2]-(points[2].normalized()*10)-un_wind_check.position
@@ -39,3 +44,16 @@ func _process(delta: float) -> void:
 func insertPointToPointsAndGlobalPositions(index, pointLocal, pointGlobal):
 	add_point(pointLocal, index)
 	globalPositions.insert(index, pointGlobal)
+
+func setWeb():
+	for i in range(points.size()-1):
+		var point1 = points[i]
+		var point2 = points[i+1]
+		
+		var webCollision = WEB_COLLISION.instantiate()
+		webCollision.position = point1
+		webCollision.look_at(point2)
+		webCollision.scale.x = point1.distance_to(point2)
+		add_child(webCollision)
+	
+	isSetWeb = true

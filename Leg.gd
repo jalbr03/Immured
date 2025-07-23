@@ -26,6 +26,7 @@ func _ready() -> void:
 	lastStepPoint = $Target.global_position
 	maxStepDelay = legIndex*100
 	
+	$FloorCast.collide_with_areas = true
 	#if(!is_multiplayer_authority()):
 		#get_modification_stack().enabled = false
 

@@ -24,6 +24,11 @@ func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 
 func _ready():
+	floorRayCast.collide_with_areas = true
+	floor_normal_ray_cast.collide_with_areas = true
+	floor_normal_ray_cast_2.collide_with_areas = true
+	web_cast.collide_with_areas = true
+	
 	$VBoxContainer/PlayerName.text = Multiplayer.localPlayerName
 	for i in range(3):
 		var leg1:Node2D = legRight.instantiate()
@@ -59,7 +64,6 @@ func _physics_process(delta: float) -> void:
 	var justPressedSlingWeb = Input.is_action_just_pressed("slingWeb") || Input.is_action_just_pressed("spinWeb")
 	var pressingSlingWeb = Input.is_action_pressed("slingWeb")
 	var pressingSpinWeb = Input.is_action_pressed("spinWeb")
-	var releasedSlingWeb = !Input.is_action_pressed("spinWeb") && !Input.is_action_pressed("slingWeb")
 	
 	if(justPressedSlingWeb && web_cast.is_colliding() && currentWeb == null):
 		createWeb.rpc(multiplayer.get_unique_id())
@@ -72,8 +76,8 @@ func _physics_process(delta: float) -> void:
 	elif(pressingSpinWeb && currentWeb != null):
 		pass
 	
-	if(releasedSlingWeb && currentWeb != null):
-		destroyWeb.rpc(multiplayer.get_unique_id())
+	if(!pressingSlingWeb && !pressingSpinWeb && currentWeb != null):
+		setDownWeb.rpc(multiplayer.get_unique_id())
 	
 	web_cast.look_at(get_global_mouse_position())
 	
@@ -118,4 +122,19 @@ func createWeb(pid):
 @rpc("any_peer", "reliable", "call_local")
 func destroyWeb(pid):
 	currentWeb.queue_free()
+	currentWeb = null
+	
+@rpc("any_peer", "reliable", "call_local")
+func setDownWeb(pid):
+	currentWeb.reparent(get_parent())
+	var webPos = currentWeb.global_position
+	var targetPoint = web_cast.get_collision_point()
+	var steps = 100
+	for i in range(steps):
+		print(currentWeb.global_position)
+		currentWeb.global_position = lerp(webPos, targetPoint, float(i+1)/steps)
+		currentWeb.updateWeb()
+		if(currentWeb.global_position == targetPoint):
+			break
+	currentWeb.setWeb()
 	currentWeb = null
