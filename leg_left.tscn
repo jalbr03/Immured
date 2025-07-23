@@ -83,7 +83,6 @@ remote_path = NodePath("../../../SpriteUpperLeg")
 
 [node name="SpriteUpperLeg" type="Polygon2D" parent="."]
 rotation = -2.46866
-scale = Vector2(1, 1)
 texture = SubResource("GradientTexture2D_evaa3")
 polygon = PackedVector2Array(2.06574, -7.33033, 111.72, -29.4013, 15.0001, 5.00004, -2.66325, 1.70507)
 
@@ -97,7 +96,6 @@ polygon = PackedVector2Array(79.9359, 27.0784, 17.2845, -4.95818, 1.24844, -0.07
 [node name="SpriteLowerLeg" type="Polygon2D" parent="."]
 position = Vector2(-161.001, -28.9362)
 rotation = 1.6333
-scale = Vector2(1, 1)
 texture = SubResource("GradientTexture2D_evaa3")
 polygon = PackedVector2Array(1.79459, 17.7948, 39.3687, 70.6468, 13.817, 12.7481, -7.65446, -17.0012)
 

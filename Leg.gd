@@ -2,12 +2,14 @@ extends Node2D
 
 @export var nextStepPoint:Vector2
 @export var legDirection:int
-var inputDirection = 0
+@export var inputDirection = 0
 var lastStepPoint:Vector2
 var currentStepPoint:Vector2
-var legEnabled = true
 
-var stepDist = 110+randf_range(-20, 80)
+var stepDist = 130
+var legIndex = 0
+var stepDelay = 0
+var maxStepDelay
 
 @onready var lastPosition = global_position
 
@@ -22,6 +24,7 @@ func _ready() -> void:
 	nextStepPoint = $Target.global_position
 	currentStepPoint = $Target.global_position
 	lastStepPoint = $Target.global_position
+	maxStepDelay = legIndex*100
 	
 	#if(!is_multiplayer_authority()):
 		#get_modification_stack().enabled = false
@@ -30,25 +33,31 @@ func _process(delta: float) -> void:
 	#if(!legEnabled):
 		#return
 	$Target.global_position = currentStepPoint
-	#var input = global_position - lastPosition#Input.get_axis("Left", "Right")
+	var input = (global_position - lastPosition)#Input.get_axis("Left", "Right")
+	
+	input = input.rotated(-global_rotation)
+	if(input.x != 0):
+		inputDirection = sign(input.x)
+		#print(input)
 	
 	if(legDirection == inputDirection):
-		match floorCastState:
-			floorCastStates.castOut:
-				$FloorCast.target_position.x = stepDist*legDirection*1.5
-				if(!$FloorCast.is_colliding()):
-					floorCastState = floorCastStates.castIn
-			floorCastStates.castIn:
-				$FloorCast.position.x = stepDist*legDirection
-				$FloorCast.target_position.x = -stepDist*legDirection*1.5
-				if(!$FloorCast.is_colliding()):
-					floorCastState = floorCastStates.castInLong
-			floorCastStates.castInLong:
-				$FloorCast.position.x = stepDist*legDirection
-				$FloorCast.target_position.x = -stepDist*legDirection*2
-				$FloorCast.target_position.y = 200
-				#if($FloorCast.is_colliding()):
-					#floorCastState = floorCastStates.castOut
+		$FloorCast.position.x = stepDist*legDirection*2
+		$FloorCast.target_position.x = -stepDist*legDirection*2
+		$FloorCast.target_position.y = 200
+		#match floorCastState:
+			#floorCastStates.castOut:
+				#$FloorCast.target_position.x = stepDist*legDirection*1.5
+				#if(!$FloorCast.is_colliding()):
+					#floorCastState = floorCastStates.castIn
+			#floorCastStates.castIn:
+				#$FloorCast.position.x = stepDist*legDirection
+				#$FloorCast.target_position.x = -stepDist*legDirection*1.5
+				#if(!$FloorCast.is_colliding()):
+					#floorCastState = floorCastStates.castInLong
+			#floorCastStates.castInLong:
+				#$FloorCast.position.x = stepDist*legDirection
+				#$FloorCast.target_position.x = -stepDist*legDirection*2
+				#$FloorCast.target_position.y = 200
 	else:
 		floorCastState = floorCastStates.castOut
 		$FloorCast.position.x = 0
@@ -57,10 +66,13 @@ func _process(delta: float) -> void:
 	
 	nextStepPoint = $FloorCast.get_collision_point()
 	
-	if(currentStepPoint.distance_to(nextStepPoint) > stepDist):
-		animateLeg = true
-		animateToPoint = nextStepPoint
-	
+	if(currentStepPoint.distance_to(nextStepPoint) > stepDist && !animateLeg):
+		stepDelay -= 1
+		if(stepDelay <= 0):
+			animateLeg = true
+			animateToPoint = nextStepPoint
+	else:
+		stepDelay = maxStepDelay
 	if(animateLeg):
 		var animatedStep = animateToPoint
 		var animatedLastStep = lastStepPoint
@@ -78,4 +90,5 @@ func _process(delta: float) -> void:
 			animateTime = 0
 			lastStepPoint = currentStepPoint
 	
-	lastPosition = global_position
+	if(lastPosition.distance_to(global_position) > 0.5):
+		lastPosition = global_position

@@ -11,6 +11,9 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath("VBoxContainer/PlayerName:text")
 properties/1/spawn = true
 properties/1/replication_mode = 2
+properties/2/path = NodePath(".:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="Monster" type="CharacterBody2D"]
 collision_layer = 2
@@ -26,6 +29,7 @@ offset_right = 10.0
 offset_bottom = 10.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.01
 replication_config = SubResource("SceneReplicationConfig_s3gyj")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -64,3 +68,6 @@ ignore_rotation = false
 rotation_smoothing_enabled = true
 
 [node name="Legs" type="Node2D" parent="."]
+
+[node name="WebCast" type="RayCast2D" parent="."]
+target_position = Vector2(2000, 0)
