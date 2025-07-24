@@ -8,15 +8,25 @@ var globalPositions = []
 const WEB_COLLISION = preload("res://web_collision.tscn")
 var webCheckMinDistance = 20
 var isSetWeb = false
+var settingDown = false
+var settingDownDelay = 600
 
 func _ready() -> void:
+	web_check.collide_with_areas = true
+	un_wind_check.collide_with_areas = true
 	startGlobalPosition = global_position
 	for point:Vector2 in points:
 		globalPositions.append(to_global(point))
 
 func _process(delta: float) -> void:
+	if(settingDown && !isSetWeb):
+		settingDownDelay -= 1
+		if(settingDownDelay <= 0):
+			setWeb()
+	
 	if(!is_multiplayer_authority() || isSetWeb):
 		return
+	
 	global_rotation = 0
 	updateWeb()
 
@@ -45,15 +55,19 @@ func insertPointToPointsAndGlobalPositions(index, pointLocal, pointGlobal):
 	add_point(pointLocal, index)
 	globalPositions.insert(index, pointGlobal)
 
+#@rpc("any_peer", "reliable", "call_remote")
 func setWeb():
 	for i in range(points.size()-1):
 		var point1 = points[i]
 		var point2 = points[i+1]
 		
 		var webCollision = WEB_COLLISION.instantiate()
+		#webCollision.set_multiplayer_authority(pid)
 		webCollision.position = point1
 		webCollision.look_at(point2)
 		webCollision.scale.x = point1.distance_to(point2)
 		add_child(webCollision)
+		print("created section " + str(i))
 	
 	isSetWeb = true
+	print("web set")

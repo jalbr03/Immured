@@ -77,7 +77,10 @@ func _physics_process(delta: float) -> void:
 		pass
 	
 	if(!pressingSlingWeb && !pressingSpinWeb && currentWeb != null):
-		setDownWeb.rpc(multiplayer.get_unique_id())
+		reparentWeb.rpc(multiplayer.get_unique_id())
+		setDownWeb()
+		#currentWeb.setWeb.rpc(multiplayer.get_unique_id())
+		currentWeb = null
 	
 	web_cast.look_at(get_global_mouse_position())
 	
@@ -125,16 +128,20 @@ func destroyWeb(pid):
 	currentWeb = null
 	
 @rpc("any_peer", "reliable", "call_local")
-func setDownWeb(pid):
+func reparentWeb(pid):
 	currentWeb.reparent(get_parent())
+	currentWeb.settingDown = true
+
+func setDownWeb():
 	var webPos = currentWeb.global_position
 	var targetPoint = web_cast.get_collision_point()
 	var steps = 100
 	for i in range(steps):
-		print(currentWeb.global_position)
 		currentWeb.global_position = lerp(webPos, targetPoint, float(i+1)/steps)
 		currentWeb.updateWeb()
 		if(currentWeb.global_position == targetPoint):
 			break
-	currentWeb.setWeb()
-	currentWeb = null
+	
+	
+	#currentWeb.setWeb.rpc(pid)
+	#currentWeb = null
