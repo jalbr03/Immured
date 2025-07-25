@@ -62,6 +62,7 @@ func _physics_process(delta: float) -> void:
 	var jump = Input.is_action_just_pressed("Jump")
 	
 	var justPressedSlingWeb = Input.is_action_just_pressed("slingWeb") || Input.is_action_just_pressed("spinWeb")
+	var justReleasedSlingWeb = Input.is_action_just_released("slingWeb")
 	var pressingSlingWeb = Input.is_action_pressed("slingWeb")
 	var pressingSpinWeb = Input.is_action_pressed("spinWeb")
 	
@@ -75,6 +76,10 @@ func _physics_process(delta: float) -> void:
 		rotation -= PI/2
 	elif(pressingSpinWeb && currentWeb != null):
 		pass
+	
+	if(justReleasedSlingWeb && !pressingSpinWeb && currentWeb != null):
+		destroyWeb.rpc(multiplayer.get_unique_id())
+		currentWeb = null
 	
 	if(!pressingSlingWeb && !pressingSpinWeb && currentWeb != null):
 		reparentWeb.rpc(multiplayer.get_unique_id())

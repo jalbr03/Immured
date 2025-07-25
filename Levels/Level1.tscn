@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cotpmj4tes8la"]
+[gd_scene load_steps=5 format=3 uid="uid://cotpmj4tes8la"]
 
 [ext_resource type="Script" uid="uid://bcsbpt35h0udc" path="res://Levels/level_1.gd" id="1_3anf8"]
+[ext_resource type="PackedScene" uid="uid://dafx1am402ipa" path="res://Enemy/enemy.tscn" id="2_3anf8"]
+[ext_resource type="PackedScene" uid="uid://ddlg7g1pfsyy4" path="res://Enemy/pistol.tscn" id="3_fhqol"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w77jt"]
 
@@ -57,6 +59,82 @@ color = Color(0.617455, 0.617455, 0.617455, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D5"]
 shape = SubResource("RectangleShape2D_w77jt")
 
+[node name="StaticBody2D6" type="StaticBody2D" parent="."]
+position = Vector2(740, 592)
+rotation = 2.93784
+scale = Vector2(19.5091, 3.155)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D6"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501466, 0.501466)
+color = Color(0.617455, 0.617455, 0.617455, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D6"]
+shape = SubResource("RectangleShape2D_w77jt")
+
+[node name="StaticBody2D7" type="StaticBody2D" parent="."]
+position = Vector2(795, 547)
+scale = Vector2(2, 2)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D7"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501466, 0.501466)
+color = Color(0.617455, 0.617455, 0.617455, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D7"]
+shape = SubResource("RectangleShape2D_w77jt")
+
+[node name="StaticBody2D8" type="StaticBody2D" parent="."]
+position = Vector2(830, 527)
+scale = Vector2(2, 2)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D8"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501466, 0.501466)
+color = Color(0.617455, 0.617455, 0.617455, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D8"]
+shape = SubResource("RectangleShape2D_w77jt")
+
+[node name="StaticBody2D9" type="StaticBody2D" parent="."]
+position = Vector2(864, 508)
+scale = Vector2(2, 2)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D9"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501466, 0.501466)
+color = Color(0.617455, 0.617455, 0.617455, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D9"]
+shape = SubResource("RectangleShape2D_w77jt")
+
+[node name="StaticBody2D10" type="StaticBody2D" parent="."]
+position = Vector2(899, 488)
+scale = Vector2(2, 2)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D10"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+scale = Vector2(0.501466, 0.501466)
+color = Color(0.617455, 0.617455, 0.617455, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D10"]
+shape = SubResource("RectangleShape2D_w77jt")
+
 [node name="StaticBody2D3" type="StaticBody2D" parent="."]
 position = Vector2(58, 155)
 rotation = 2.48607
@@ -88,3 +166,10 @@ color = Color(0.617455, 0.617455, 0.617455, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
 shape = SubResource("RectangleShape2D_w77jt")
+
+[node name="Enemy" parent="." node_paths=PackedStringArray("weapon") instance=ExtResource("2_3anf8")]
+position = Vector2(542, 488)
+weapon = NodePath("Pistol")
+
+[node name="Pistol" parent="Enemy" instance=ExtResource("3_fhqol")]
+position = Vector2(187, -101)
