@@ -316,11 +316,16 @@ node_b = NodePath("../../PB_Head")
 [node name="gunHoldFrom" type="Marker2D" parent="PB_torso"]
 position = Vector2(1, -102)
 
+[node name="LineOfSight" type="RayCast2D" parent="PB_torso"]
+position = Vector2(2, -101)
+target_position = Vector2(0, 0)
+
 [node name="PB_Head" type="RigidBody2D" parent="."]
 position = Vector2(1, -102)
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("3_am0pq")
+limbAbilitys = Array[int]([3])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_Head"]
 position = Vector2(0, -21.765)
@@ -475,12 +480,12 @@ position = Vector2(-1, 57)
 rest = Transform2D(1, 0, 0, 1, -1, 57)
 
 [node name="hipLeft" type="Bone2D" parent="Skeleton2D/torso"]
-scale = Vector2(0.999925, 0.999925)
+scale = Vector2(0.999926, 0.999926)
 rest = Transform2D(1, 0, 0, 1, 0, 0)
 
 [node name="upperLegLeft" type="Bone2D" parent="Skeleton2D/torso/hipLeft"]
 position = Vector2(0, 52)
-scale = Vector2(0.999918, 0.999918)
+scale = Vector2(0.999916, 0.999916)
 rest = Transform2D(1, 0, 0, 1, 0, 52)
 
 [node name="lowerLegLeft" type="Bone2D" parent="Skeleton2D/torso/hipLeft/upperLegLeft"]
@@ -488,12 +493,12 @@ position = Vector2(0, 51)
 rest = Transform2D(1, 0, 0, 1, -6, 70)
 
 [node name="hipRight" type="Bone2D" parent="Skeleton2D/torso"]
-scale = Vector2(0.999925, 0.999925)
+scale = Vector2(0.999924, 0.999924)
 rest = Transform2D(1, 0, 0, 1, 0, 0)
 
 [node name="upperLegRight" type="Bone2D" parent="Skeleton2D/torso/hipRight"]
 position = Vector2(0, 52)
-scale = Vector2(0.999919, 0.999919)
+scale = Vector2(0.999918, 0.999918)
 rest = Transform2D(1, 0, 0, 1, 0, 52)
 
 [node name="lowerLegRight" type="Bone2D" parent="Skeleton2D/torso/hipRight/upperLegRight"]
@@ -501,13 +506,12 @@ position = Vector2(0, 51)
 rest = Transform2D(1, 0, 0, 1, -6, 70)
 
 [node name="TargetLeft" type="Marker2D" parent="Skeleton2D"]
-position = Vector2(94, -38)
+position = Vector2(-1, 22)
 
 [node name="TargetRight" type="Marker2D" parent="Skeleton2D"]
-position = Vector2(123, -72)
+position = Vector2(-1, 19)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_qi2p4")
 }
-autoplay = "walkRight"

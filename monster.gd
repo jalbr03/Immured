@@ -1,7 +1,7 @@
 class_name Monster
 extends CharacterBody2D
 
-var speed : int = 200
+var speed : int = 300
 
 const GRAVITY = 50
 var jumpStrength = 1000

@@ -2,6 +2,7 @@ extends RigidBody2D
 
 
 @export var limbAbilitys:Array[Globals.abilities]
+var strengthMultiplyer:float = 1
 
 func _physics_process(delta: float) -> void:
 	pass

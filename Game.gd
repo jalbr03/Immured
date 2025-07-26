@@ -12,7 +12,6 @@ const PLAYER = preload("res://monster.tscn")
 const PLAYER_TEXTBOX = preload("res://player_name.tscn")
 
 var peer = ENetMultiplayerPeer.new()
-var players: Array[Monster] = []
 
 func _ready():
 	$MultiplayerSpawner.spawn_function = add_player
@@ -76,7 +75,7 @@ func add_player(pid):
 	var player = PLAYER.instantiate()
 	player.name = str(pid)
 	player.global_position = find_child("SpawnPoint", true, false).global_position
-	players.append(player)
+	Globals.players.append(player)
 	return player
 
 func _on_copy_oid_pressed():

@@ -15,7 +15,7 @@ var maxStepDelay
 
 var animateLeg = false
 var animateTime = 0
-var animationSpeed = 0.005
+var animationSpeed = 3
 var animateToPoint:Vector2
 enum floorCastStates {castOut, castIn, castInLong}
 var floorCastState = floorCastStates.castOut
@@ -24,7 +24,7 @@ func _ready() -> void:
 	nextStepPoint = $Target.global_position
 	currentStepPoint = $Target.global_position
 	lastStepPoint = $Target.global_position
-	maxStepDelay = legIndex*100
+	maxStepDelay = legIndex*0.1
 	
 	$FloorCast.collide_with_areas = true
 	#if(!is_multiplayer_authority()):
@@ -68,7 +68,7 @@ func _process(delta: float) -> void:
 	nextStepPoint = $FloorCast.get_collision_point()
 	
 	if(currentStepPoint.distance_to(nextStepPoint) > stepDist && !animateLeg):
-		stepDelay -= 1
+		stepDelay -= delta
 		if(stepDelay <= 0):
 			animateLeg = true
 			animateToPoint = nextStepPoint
@@ -85,7 +85,7 @@ func _process(delta: float) -> void:
 			animatedStep = animateToPoint
 		currentStepPoint = lerp(animatedLastStep, animatedStep, animateTime)
 		
-		animateTime += animationSpeed
+		animateTime += animationSpeed*delta
 		if(animateTime >= 1):
 			animateLeg = false
 			animateTime = 0

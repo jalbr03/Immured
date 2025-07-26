@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://cotpmj4tes8la"]
 
 [ext_resource type="Script" uid="uid://bcsbpt35h0udc" path="res://Levels/level_1.gd" id="1_3anf8"]
-[ext_resource type="PackedScene" uid="uid://dafx1am402ipa" path="res://Enemy/enemy.tscn" id="2_3anf8"]
-[ext_resource type="PackedScene" uid="uid://ddlg7g1pfsyy4" path="res://Enemy/pistol.tscn" id="3_fhqol"]
+[ext_resource type="PackedScene" uid="uid://dafx1am402ipa" path="res://Enemy/enemy.tscn" id="2_fhqol"]
+[ext_resource type="PackedScene" uid="uid://ddlg7g1pfsyy4" path="res://Enemy/pistol.tscn" id="3_iotdp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w77jt"]
 
@@ -10,7 +10,7 @@
 script = ExtResource("1_3anf8")
 
 [node name="SpawnPoint" type="Marker2D" parent="."]
-position = Vector2(322, 524)
+position = Vector2(61, -50)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(550, 633)
@@ -167,9 +167,9 @@ color = Color(0.617455, 0.617455, 0.617455, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
 shape = SubResource("RectangleShape2D_w77jt")
 
-[node name="Enemy" parent="." node_paths=PackedStringArray("weapon") instance=ExtResource("2_3anf8")]
-position = Vector2(542, 488)
+[node name="Enemy" parent="." node_paths=PackedStringArray("weapon") instance=ExtResource("2_fhqol")]
+position = Vector2(540, 463)
 weapon = NodePath("Pistol")
 
-[node name="Pistol" parent="Enemy" instance=ExtResource("3_fhqol")]
-position = Vector2(187, -101)
+[node name="Pistol" parent="Enemy" instance=ExtResource("3_iotdp")]
+position = Vector2(39, -25)

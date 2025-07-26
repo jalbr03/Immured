@@ -9,10 +9,10 @@ colors = PackedColorArray(1, 1, 1, 1)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_v7imy"]
 gradient = SubResource("Gradient_nyofg")
 
-[node name="Pistol" type="Node2D" node_paths=PackedStringArray("hand1", "hand2")]
+[node name="Pistol" type="Node2D" node_paths=PackedStringArray("otherHand")]
 script = ExtResource("1_nyofg")
-hand1 = NodePath("hand1")
-hand2 = NodePath("hand2")
+otherHand = NodePath("otherHand")
+requoil = 1000
 
 [node name="ColorRect" type="Sprite2D" parent="."]
 position = Vector2(-9.48304, 5.96364)
@@ -24,7 +24,5 @@ position = Vector2(3, -7)
 scale = Vector2(0.538228, -0.149972)
 texture = SubResource("GradientTexture2D_v7imy")
 
-[node name="hand1" type="Marker2D" parent="."]
-
-[node name="hand2" type="Marker2D" parent="."]
+[node name="otherHand" type="Marker2D" parent="."]
 position = Vector2(-10, 7)

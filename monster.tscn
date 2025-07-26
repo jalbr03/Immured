@@ -49,22 +49,23 @@ text = "player"
 horizontal_alignment = 1
 
 [node name="FloorRayCast" type="RayCast2D" parent="."]
-target_position = Vector2(0, 100)
+target_position = Vector2(0, 150)
 
 [node name="FloorNormalRayCast" type="RayCast2D" parent="."]
 position = Vector2(-60, -5)
-rotation = -0.506145
+rotation = -0.366519
 target_position = Vector2(0, 200)
 hit_from_inside = true
 
 [node name="FloorNormalRayCast2" type="RayCast2D" parent="."]
 position = Vector2(60, -5)
-rotation = 0.506145
+rotation = 0.366519
 target_position = Vector2(0, 200)
 hit_from_inside = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 ignore_rotation = false
+zoom = Vector2(0.5, 0.5)
 rotation_smoothing_enabled = true
 
 [node name="Legs" type="Node2D" parent="."]

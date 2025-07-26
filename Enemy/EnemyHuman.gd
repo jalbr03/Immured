@@ -19,7 +19,6 @@ func _ready():
 			call_child_recursive(child, update_bone)
 	
 	weapon.gunHolder = gunHoldFrom
-	weapon.global_position = Vector2(500, 500)
 	weapon.mainHoldingHand = $PB_upperArmRight/Hand
 	$Skeleton2D.weapon = weapon
 	get_parent().add_child(weapon)
