@@ -5,6 +5,7 @@ extends Node2D
 var gunHolder:Node2D
 var mainHoldingHand:Node2D
 @export var maxReloadTime = 1
+@export var bullet: PackedScene
 var ReloadTime = 0
 
 func _process(delta: float) -> void:
@@ -17,6 +18,12 @@ func _process(delta: float) -> void:
 func shoot():
 	if(ReloadTime > 0):
 		return
+	
+	var shotBullet:Node2D = bullet.instantiate()
+	shotBullet.position = global_position
+	shotBullet.rotation = rotation
+	get_tree().root.add_child(shotBullet)
+	
 	ReloadTime = maxReloadTime
 	var arm:RigidBody2D = mainHoldingHand.get_parent()
 	arm.apply_force(Vector2(cos(rotation+PI/2), sin(rotation+PI/2))*-requoil, global_position)

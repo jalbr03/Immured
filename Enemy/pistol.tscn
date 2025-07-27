@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://ddlg7g1pfsyy4"]
+[gd_scene load_steps=5 format=3 uid="uid://ddlg7g1pfsyy4"]
 
 [ext_resource type="Script" uid="uid://bgk5j4yqkqqdq" path="res://Enemy/weaponLogic.gd" id="1_nyofg"]
+[ext_resource type="PackedScene" uid="uid://bhccm7hsru5x2" path="res://Enemy/bullet.tscn" id="2_v7imy"]
 
 [sub_resource type="Gradient" id="Gradient_nyofg"]
 offsets = PackedFloat32Array(1)
@@ -13,6 +14,7 @@ gradient = SubResource("Gradient_nyofg")
 script = ExtResource("1_nyofg")
 otherHand = NodePath("otherHand")
 requoil = 1000
+bullet = ExtResource("2_v7imy")
 
 [node name="ColorRect" type="Sprite2D" parent="."]
 position = Vector2(-9.48304, 5.96364)

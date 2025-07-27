@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhccm7hsru5x2"]
+
+[ext_resource type="Script" uid="uid://hl2phgb11mvo" path="res://Enemy/bullet.gd" id="1_ibq1y"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_ibq1y"]
+b = Vector2(1, 0)
+
+[node name="Bullet" type="Node2D"]
+script = ExtResource("1_ibq1y")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(1000, 0)
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 4.0
+
+[node name="Area2D" type="Area2D" parent="." groups=["Damage"]]
+collision_layer = 2
+collision_mask = 9
+
+[node name="hurtCollision" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(1000, 1)
+shape = SubResource("SegmentShape2D_ibq1y")
+debug_color = Color(0.95581, 0.0778533, 0.492203, 0.42)
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

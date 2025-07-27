@@ -146,7 +146,6 @@ func setDownWeb():
 		currentWeb.updateWeb()
 		if(currentWeb.global_position == targetPoint):
 			break
-	
-	
-	#currentWeb.setWeb.rpc(pid)
-	#currentWeb = null
+
+func takeDamage(damage):
+	print("damaged")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dafx1am402ipa"]
+[gd_scene load_steps=20 format=3 uid="uid://dafx1am402ipa"]
 
 [ext_resource type="Script" uid="uid://btyhem5exmoop" path="res://Enemy/EnemyHuman.gd" id="1_px1sc"]
 [ext_resource type="Script" uid="uid://br18rm6awsxa0" path="res://Enemy/EnemySkeleton.gd" id="2_eqilm"]
@@ -7,8 +7,25 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_px1sc"]
 size = Vector2(12, 102)
 
+[sub_resource type="Gradient" id="Gradient_am0pq"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_eqilm"]
+gradient = SubResource("Gradient_am0pq")
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_am0pq"]
 radius = 21.0047
+
+[sub_resource type="Gradient" id="Gradient_ncf7h"]
+offsets = PackedFloat32Array(0.993506, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_m6jha"]
+gradient = SubResource("Gradient_ncf7h")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_am0pq"]
 size = Vector2(11, 51)
@@ -269,9 +286,165 @@ tracks/5/keys = {
 "values": [0.0, 0.0, 0.0, 0.0, 0.0]
 }
 
+[sub_resource type="Animation" id="Animation_am0pq"]
+resource_name = "runLeft"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton2D/torso/hipLeft:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 1.65612, 0.0, -0.617988, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton2D/torso/hipLeft/upperLegLeft:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [-1.69995, -1.60877, 0.0, -1.03223, -1.6993]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Skeleton2D/torso/hipLeft/upperLegLeft/lowerLegLeft:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 0.0, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Skeleton2D/torso/hipRight:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -0.55719, 0.0, 1.64178, 0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Skeleton2D/torso/hipRight/upperLegRight:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -0.973734, -1.66356, -1.56278, 0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Skeleton2D/torso/hipRight/upperLegRight/lowerLegRight:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 0.0, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_eqilm"]
+resource_name = "runRight"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton2D/torso/hipRight:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.749966, 0.0, -1.53884, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton2D/torso/hipLeft:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, -1.60085, 0.0, 0.82915, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Skeleton2D/torso/hipLeft/upperLegLeft:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [1.76071, 1.68034, 0.0, 0.665872, 1.8986]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Skeleton2D/torso/hipLeft/upperLegLeft/lowerLegLeft:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 0.0, 0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Skeleton2D/torso/hipRight/upperLegRight:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.65024, 1.86622, 1.60721, 0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Skeleton2D/torso/hipRight/upperLegRight/lowerLegRight:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 0.0, 0.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qi2p4"]
 _data = {
 &"RESET": SubResource("Animation_4gyqm"),
+&"runLeft": SubResource("Animation_am0pq"),
+&"runRight": SubResource("Animation_eqilm"),
 &"walkLeft": SubResource("Animation_7xaro"),
 &"walkRight": SubResource("Animation_7k104")
 }
@@ -289,6 +462,11 @@ script = ExtResource("3_am0pq")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_torso"]
 position = Vector2(1, -51)
 shape = SubResource("RectangleShape2D_px1sc")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_torso/CollisionShape2D"]
+position = Vector2(0, -0.500001)
+scale = Vector2(0.169922, 1.57813)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="PB_torso"]
 node_a = NodePath("..")
@@ -331,6 +509,11 @@ limbAbilitys = Array[int]([3])
 position = Vector2(0, -21.765)
 shape = SubResource("CircleShape2D_am0pq")
 
+[node name="Sprite2D" type="Sprite2D" parent="PB_Head/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.68, 0.68)
+texture = SubResource("GradientTexture2D_m6jha")
+
 [node name="PB_hipLeft" type="RigidBody2D" parent="."]
 collision_layer = 2
 collision_mask = 5
@@ -339,6 +522,11 @@ script = ExtResource("3_am0pq")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_hipLeft"]
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_hipLeft/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PB_upperLegLeft" type="RigidBody2D" parent="."]
 position = Vector2(0, 50)
@@ -350,6 +538,11 @@ limbAbilitys = Array[int]([1])
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperLegLeft"]
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_upperLegLeft/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="PB_upperLegLeft"]
 node_a = NodePath("../../PB_hipLeft")
@@ -364,6 +557,11 @@ script = ExtResource("3_am0pq")
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
 
+[node name="Sprite2D" type="Sprite2D" parent="PB_hipRight/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
+
 [node name="PB_upperLegRight" type="RigidBody2D" parent="."]
 position = Vector2(0, 50)
 collision_layer = 2
@@ -374,6 +572,11 @@ limbAbilitys = Array[int]([1])
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperLegRight"]
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_upperLegRight/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="PB_upperLegRight"]
 node_a = NodePath("../../PB_hipRight")
@@ -389,6 +592,11 @@ script = ExtResource("3_am0pq")
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
 
+[node name="Sprite2D" type="Sprite2D" parent="PB_sholderLeft/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
+
 [node name="PB_upperArmLeft" type="RigidBody2D" parent="."]
 position = Vector2(1, -50)
 collision_layer = 2
@@ -399,6 +607,11 @@ limbAbilitys = Array[int]([2, 4])
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperArmLeft"]
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_upperArmLeft/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="PB_upperArmLeft"]
 node_a = NodePath("../../PB_sholderLeft")
@@ -417,6 +630,11 @@ script = ExtResource("3_am0pq")
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
 
+[node name="Sprite2D" type="Sprite2D" parent="PB_sholderRight/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
+
 [node name="PB_upperArmRight" type="RigidBody2D" parent="."]
 position = Vector2(1, -50)
 collision_layer = 2
@@ -427,6 +645,11 @@ limbAbilitys = Array[int]([2, 4])
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperArmRight"]
 position = Vector2(0.5, 24.5)
 shape = SubResource("RectangleShape2D_am0pq")
+
+[node name="Sprite2D" type="Sprite2D" parent="PB_upperArmRight/CollisionShape2D"]
+position = Vector2(0, -0.5)
+scale = Vector2(0.169922, 0.78125)
+texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="PB_upperArmRight"]
 node_a = NodePath("../../PB_sholderRight")
@@ -480,12 +703,12 @@ position = Vector2(-1, 57)
 rest = Transform2D(1, 0, 0, 1, -1, 57)
 
 [node name="hipLeft" type="Bone2D" parent="Skeleton2D/torso"]
-scale = Vector2(0.999926, 0.999926)
+scale = Vector2(0.999898, 0.999898)
 rest = Transform2D(1, 0, 0, 1, 0, 0)
 
 [node name="upperLegLeft" type="Bone2D" parent="Skeleton2D/torso/hipLeft"]
 position = Vector2(0, 52)
-scale = Vector2(0.999916, 0.999916)
+scale = Vector2(0.999892, 0.999892)
 rest = Transform2D(1, 0, 0, 1, 0, 52)
 
 [node name="lowerLegLeft" type="Bone2D" parent="Skeleton2D/torso/hipLeft/upperLegLeft"]
@@ -493,12 +716,12 @@ position = Vector2(0, 51)
 rest = Transform2D(1, 0, 0, 1, -6, 70)
 
 [node name="hipRight" type="Bone2D" parent="Skeleton2D/torso"]
-scale = Vector2(0.999924, 0.999924)
+scale = Vector2(0.999897, 0.999897)
 rest = Transform2D(1, 0, 0, 1, 0, 0)
 
 [node name="upperLegRight" type="Bone2D" parent="Skeleton2D/torso/hipRight"]
 position = Vector2(0, 52)
-scale = Vector2(0.999918, 0.999918)
+scale = Vector2(0.99989, 0.99989)
 rest = Transform2D(1, 0, 0, 1, 0, 52)
 
 [node name="lowerLegRight" type="Bone2D" parent="Skeleton2D/torso/hipRight/upperLegRight"]

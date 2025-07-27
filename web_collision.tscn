@@ -3,7 +3,7 @@
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_otrti"]
 b = Vector2(1, 0)
 
-[node name="webCollision" type="Area2D"]
+[node name="webCollision" type="Area2D" groups=["solid"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("SegmentShape2D_otrti")

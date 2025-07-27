@@ -15,8 +15,9 @@ properties/2/path = NodePath(".:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
-[node name="Monster" type="CharacterBody2D"]
-collision_layer = 6
+[node name="Monster" type="CharacterBody2D" groups=["canTakeDamage"]]
+collision_layer = 14
+collision_mask = 9
 script = ExtResource("1_s3gyj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

@@ -68,21 +68,23 @@ func _physics_process(delta):
 	
 	var targetMonster:CharacterBody2D = findClosestMonster()
 	
-	if(targetMonster != null && currentState != states.mindControlled):
+	if(targetMonster != null):
 		lastSeenSpot = targetMonster.global_position
-		if(currentState == states.runningAway):
-			var distanceToMonster = global_position.distance_to(targetMonster.global_position)
-			if(distanceToMonster > 500):
-				currentState = states.attacking
-		else:
-			currentState = states.attacking
+		#if(currentState == states.runningAway):
+			#var distanceToMonster = global_position.distance_to(targetMonster.global_position)
+			#if(distanceToMonster > 500):
+				#currentState = states.attacking
+		#else:
+			#currentState = states.attacking
 	
 	match currentState:
 		states.wonder:
-			walk(walkingDirection)
+			move(walkingDirection, true)
 			var randomNumber = randi_range(0, 100)
 			if(randomNumber == 0):
 				walkingDirection = randi_range(-1, 1)
+			if(targetMonster != null):
+				currentState = states.attacking
 		states.attacking:
 			if(targetMonster != null):
 				var direction = sign(targetMonster.global_position.x-global_position.x)
@@ -90,19 +92,30 @@ func _physics_process(delta):
 				var distanceToMonster = global_position.distance_to(targetMonster.global_position)
 				if(distanceToMonsterx < 800):
 					direction = 0
-				if(distanceToMonster < 100):
+					walkingDirection = direction
+				if(distanceToMonsterx > 1000):
+					walkingDirection = direction
+				if(distanceToMonster < 300):
 					currentState = states.runningAway
-				walk(direction)
+				
+				move(walkingDirection, false)
 				gunLogic(targetMonster.global_position)
 			else:
 				currentState = states.investigating
 		states.runningAway:
 			if(targetMonster != null):
 				var direction = sign(global_position.x-targetMonster.global_position.x)
-				walk(direction)
+				walkingDirection = direction
+				move(walkingDirection, false)
+				var distanceToMonster = global_position.distance_to(targetMonster.global_position)
+				if(distanceToMonster > 500):
+					currentState = states.attacking
 		states.investigating:
 			var direction = sign(lastSeenSpot.x-global_position.x)
-			walk(direction)
+			walkingDirection = direction
+			move(walkingDirection, true)
+			if(targetMonster != null):
+				currentState = states.attacking
 		states.mindControlled:
 			pass
 	
@@ -136,17 +149,27 @@ func gunLogic(target):
 	$TargetRight.global_position = target
 	$TargetLeft.global_position = weapon.otherHand.global_position
 
-func walk(direction):
+func move(direction, walking):
 	if(direction > 0):
-		$"../AnimationPlayer".play("walkRight")
+		if(walking):
+			$"../AnimationPlayer".play("walkRight")
+		else:
+			$"../AnimationPlayer".play("runRight")
+			
 	elif(direction < 0):
-		$"../AnimationPlayer".play("walkLeft")
+		if(walking):
+			$"../AnimationPlayer".play("walkLeft")
+		else:
+			$"../AnimationPlayer".play("runLeft")
 	else:
 		$"../AnimationPlayer".play("RESET")
 	for limb:RigidBody2D in walkingLimbs:
 		if limb.get_colliding_bodies().size() > 0:
 			velocity.y = -limb.linear_velocity.y*2
-			velocity.x = direction*50
+			if(walking):
+				velocity.x = direction*50
+			else:
+				velocity.x = direction*200
 		else:
 			velocity.y += 2
 
