@@ -8,10 +8,17 @@ var jumpStrength = 1000
 var jumping = false
 var currentWeb:Line2D = null
 
+@export var jawShake = false
+
 @onready var floorRayCast = $FloorRayCast
 @onready var floor_normal_ray_cast: RayCast2D = $FloorNormalRayCast
 @onready var floor_normal_ray_cast_2: RayCast2D = $FloorNormalRayCast2
 @onready var web_cast: RayCast2D = $WebCast
+@onready var jaws: Node2D = $jaws
+@onready var jaw_animation: AnimationPlayer = $jaws/jawAnimation
+@onready var jawBottom: Polygon2D = $jaws/Polygon2D
+@onready var biting_hit_box: Area2D = $jaws/bitingHitBox
+var bitingList:Array = []
 
 @onready var web = preload("res://web.tscn")
 @onready var legRight = preload("res://leg_right.tscn")
@@ -65,6 +72,19 @@ func _physics_process(delta: float) -> void:
 	var justReleasedSlingWeb = Input.is_action_just_released("slingWeb")
 	var pressingSlingWeb = Input.is_action_pressed("slingWeb")
 	var pressingSpinWeb = Input.is_action_pressed("spinWeb")
+	var biting = Input.is_action_pressed("bite")
+	var biteReleased = Input.is_action_just_released("bite")
+	var pressingDown = Input.is_action_pressed("down")
+	
+	if(biting):
+		bite()
+	else:
+		if(biteReleased):
+			bitingList.clear()
+		jaws.scale = lerp(jaws.scale, Vector2.ONE*0.6, 0.1)
+		jaws.position = lerp(jaws.position, Vector2.ZERO, 0.1)
+		jawBottom.position = lerp(jaws.position, Vector2(0, sin(Time.get_unix_time_from_system()*5)*100), 0.1)
+		jawShake = false
 	
 	if(justPressedSlingWeb && web_cast.is_colliding() && currentWeb == null):
 		createWeb.rpc(multiplayer.get_unique_id())
@@ -84,21 +104,20 @@ func _physics_process(delta: float) -> void:
 	if(!pressingSlingWeb && !pressingSpinWeb && currentWeb != null):
 		reparentWeb.rpc(multiplayer.get_unique_id())
 		setDownWeb()
-		#currentWeb.setWeb.rpc(multiplayer.get_unique_id())
 		currentWeb = null
 	
 	web_cast.look_at(get_global_mouse_position())
 	
 	if(!pressingSlingWeb || currentWeb == null):
-		movement(input, jump)
+		movement(input, jump, pressingDown)
 	
 	move_and_slide()
 
-func movement(input, jump):
-	if(floorRayCast.is_colliding()):
+func movement(input, jump, pressingDown):
+	if(floorRayCast.is_colliding() && !pressingDown):
 		velocity += (input*speed-velocity)/10
 		var direction: Vector2 = floorRayCast.global_position.direction_to(floorRayCast.get_collision_point()).normalized()
-		velocity -= direction*(20/floorRayCast.get_collision_point().distance_to(global_position))*100
+		velocity -= direction*(20/clamp(floorRayCast.get_collision_point().distance_to(global_position), 10, INF))*100
 		velocity += direction*30
 		
 		if(jump):
@@ -116,6 +135,20 @@ func rotateToWall(floorNormal1, floorNormal2):
 	var floorDirection = floorNormal1.direction_to(floorNormal2).normalized()
 	
 	rotation = lerp_angle(rotation, floorDirection.angle(),0.1)
+
+func bite():
+	if(jawShake && bitingList.size() > 0):
+		var bodyToBit = bitingList[0]
+		bodyToBit.takeDamage(0.01)
+		var directionToJaws = global_position - bodyToBit.global_position + jaws.position.rotated(rotation)
+		bodyToBit.linear_velocity = directionToJaws*50
+			
+	
+	jaws.scale = lerp(jaws.scale, Vector2.ONE, 0.1)
+	if(!jaw_animation.is_playing() && !jawShake):
+		jaw_animation.play("biting")
+	if(jawShake):
+		jaws.position.x = lerp(jaws.position.x, sin(Time.get_unix_time_from_system()*30)*100, 0.5)
 
 @rpc("any_peer", "reliable", "call_local")
 func createWeb(pid):
@@ -149,3 +182,14 @@ func setDownWeb():
 
 func takeDamage(damage):
 	print("damaged")
+
+
+func _on_biting_hit_box_body_entered(body: Node2D) -> void:
+	if(body is RigidBody2D && body.is_in_group("canTakeDamage") && !jawShake):
+		if(!bitingList.has(body)):
+			bitingList.append(body)
+
+
+func _on_biting_hit_box_body_exited(body: Node2D) -> void:
+	if(body is RigidBody2D && body.is_in_group("canTakeDamage") && !jawShake):
+		bitingList.erase(body)

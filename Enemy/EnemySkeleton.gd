@@ -11,16 +11,20 @@ extends Skeleton2D
 @export var max_angular_force: float = 9999.0
 
 var velocity:Vector2 = Vector2.ZERO
-var physicsLimbs
+var physicsLimbs:Array
 var walkingLimbs
 var gunHoldingLimbs
 var livingLimbs
+var numberOfLivingLimbs
+var bodyStrength = 1
 
 enum states {
 	wonder,
 	attacking,
 	runningAway,
 	investigating,
+	gettingHurt,
+	gettingUp,
 	mindControlled
 }
 
@@ -37,6 +41,8 @@ enum weaponStates{
 }
 var weaponState
 @onready var line_of_sight: RayCast2D = $"../PB_torso/LineOfSight"
+@onready var sight: Polygon2D = $"../PB_Head/flashLight/sight"
+@onready var flash_light: Node2D = $"../PB_Head/flashLight"
 
 @onready var bonesToPath = [
 	$torso, 
@@ -57,13 +63,17 @@ func _ready():
 	walkingLimbs = filterLimbs(Globals.abilities.walk)
 	gunHoldingLimbs = filterLimbs(Globals.abilities.hold)
 	livingLimbs = filterLimbs(Globals.abilities.live)
+	numberOfLivingLimbs = livingLimbs.size()
 	for limb:RigidBody2D in physicsLimbs:
 		limb.contact_monitor = true
 		limb.max_contacts_reported = 100
 
 func _physics_process(delta):
+	if(HP == 0):
+		return
 	processLimbs(delta)
-	
+	if($"../PB_torso" == null):
+		return
 	var newPos:Vector2 = $"../PB_torso".global_position
 	
 	var targetMonster:CharacterBody2D = findClosestMonster()
@@ -112,22 +122,43 @@ func _physics_process(delta):
 					currentState = states.attacking
 		states.investigating:
 			var direction = sign(lastSeenSpot.x-global_position.x)
-			walkingDirection = direction
+			if(abs(lastSeenSpot.x-global_position.x) > 100):
+				walkingDirection = direction
+			else:
+				walkingDirection = 0
 			move(walkingDirection, true)
 			if(targetMonster != null):
 				currentState = states.attacking
+		states.gettingHurt:
+			bodyStrength += 0.001
+			if(bodyStrength >= 1):
+				bodyStrength = 1
+				currentState = states.runningAway
 		states.mindControlled:
 			pass
 	
-	#if(targetMonster != null):
-		#walk(Input.get_axis("ui_left", "ui_right"))
-		#gunLogic(targetMonster.global_position)
 	
 	newPos += velocity
 	global_position = lerp(global_position, newPos, 0.1)
 
+func removeLimb(limb:RigidBody2D):
+	physicsLimbs.erase(limb)
+	walkingLimbs.erase(limb)
+	gunHoldingLimbs.erase(limb)
+	livingLimbs.erase(limb)
+
+func takeDamage(damage):
+	currentState = states.gettingHurt
+	bodyStrength = 0
+	if(HP > 0):
+		HP -= damage
+	HP = clamp(HP, 0, INF)
+	$"../AnimationPlayer".stop()
 
 func findClosestMonster():
+	if(livingLimbs.size() < numberOfLivingLimbs):
+		HP = 0
+		return
 	var closestMonster = null
 	var bestDist = INF
 	for player:CharacterBody2D in Globals.players:
@@ -135,8 +166,10 @@ func findClosestMonster():
 		line_of_sight.look_at(player.global_position)
 		line_of_sight.force_raycast_update()
 		
+		var isPlayerInSight = Geometry2D.is_point_in_polygon(to_local(player.global_position), sight.polygon)
+		
 		var dist = global_position.distance_to(player.global_position)
-		if dist < bestDist && !line_of_sight.is_colliding():
+		if dist < bestDist && !line_of_sight.is_colliding() && isPlayerInSight:
 			bestDist = dist
 			closestMonster = player
 	return closestMonster
@@ -184,11 +217,11 @@ func processLimbs(delta):
 		var rotation_difference = angle_difference(limb.global_rotation, boneTo.global_rotation)
 		var position_difference:Vector2 = boneTo.global_position - limb.global_position
 
-		var force: Vector2 = hookes_law(position_difference, limb.linear_velocity, linear_spring_stiffness, linear_spring_damping) * HP/maxHP * limb.strengthMultiplyer
+		var force: Vector2 = hookes_law(position_difference, limb.linear_velocity, linear_spring_stiffness, linear_spring_damping) * HP/maxHP * limb.strengthMultiplyer * bodyStrength
 		force = force.limit_length(max_linear_force)
 		limb.linear_velocity += (force * delta)
 		
-		var torque = hookes_law(Vector2(rotation_difference, 0), Vector2(limb.angular_velocity, 0), angular_spring_stiffness, angular_spring_damping) * HP/maxHP * limb.strengthMultiplyer
+		var torque = hookes_law(Vector2(rotation_difference, 0), Vector2(limb.angular_velocity, 0), angular_spring_stiffness, angular_spring_damping) * HP/maxHP * limb.strengthMultiplyer * bodyStrength
 		torque = torque.limit_length(max_angular_force)
 		limb.angular_velocity += torque.x * delta
 		

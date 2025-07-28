@@ -1,9 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0oo31sacqa41"]
+[gd_scene load_steps=3 format=3 uid="uid://b0oo31sacqa41"]
+
+[ext_resource type="Script" uid="uid://da1iltq2cxc3k" path="res://web_collision.gd" id="1_281md"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_otrti"]
 b = Vector2(1, 0)
 
 [node name="webCollision" type="Area2D" groups=["solid"]]
+collision_mask = 15
+script = ExtResource("1_281md")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("SegmentShape2D_otrti")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
