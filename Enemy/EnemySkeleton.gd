@@ -16,12 +16,13 @@ var walkingLimbs
 var gunHoldingLimbs
 var livingLimbs
 var numberOfLivingLimbs
-var bodyStrength = 1
+@export var bodyStrength = 1
 
 enum states {
 	wonder,
 	attacking,
 	runningAway,
+	scared,
 	investigating,
 	gettingHurt,
 	gettingUp,
@@ -33,7 +34,7 @@ var walkingDirection = 0
 var lastSeenSpot:Vector2 = Vector2.ZERO
 
 var maxHP = 10
-var HP = 10
+@export var HP = 10
 var weapon:Node2D = null
 enum weaponStates{
 	rest,
@@ -72,6 +73,8 @@ func _physics_process(delta):
 	if(HP == 0):
 		return
 	processLimbs(delta)
+	if(!is_multiplayer_authority()):
+		return
 	if($"../PB_torso" == null):
 		return
 	var newPos:Vector2 = $"../PB_torso".global_position
@@ -80,12 +83,6 @@ func _physics_process(delta):
 	
 	if(targetMonster != null):
 		lastSeenSpot = targetMonster.global_position
-		#if(currentState == states.runningAway):
-			#var distanceToMonster = global_position.distance_to(targetMonster.global_position)
-			#if(distanceToMonster > 500):
-				#currentState = states.attacking
-		#else:
-			#currentState = states.attacking
 	
 	match currentState:
 		states.wonder:
@@ -95,11 +92,21 @@ func _physics_process(delta):
 				walkingDirection = randi_range(-1, 1)
 			if(targetMonster != null):
 				currentState = states.attacking
+			
+			if(walkingDirection != 0):
+				if(walkingDirection < 0):
+					flash_light.rotation = PI
+				else:
+					flash_light.rotation = 0
 		states.attacking:
 			if(targetMonster != null):
 				var direction = sign(targetMonster.global_position.x-global_position.x)
 				var distanceToMonsterx = abs(global_position.x-targetMonster.global_position.x)
 				var distanceToMonster = global_position.distance_to(targetMonster.global_position)
+				var directionToMonster = global_position.angle_to_point(targetMonster.global_position)
+				
+				flash_light.rotation = directionToMonster
+				
 				if(distanceToMonsterx < 800):
 					direction = 0
 					walkingDirection = direction
@@ -113,27 +120,47 @@ func _physics_process(delta):
 			else:
 				currentState = states.investigating
 		states.runningAway:
-			if(targetMonster != null):
-				var direction = sign(global_position.x-targetMonster.global_position.x)
-				walkingDirection = direction
-				move(walkingDirection, false)
-				var distanceToMonster = global_position.distance_to(targetMonster.global_position)
-				if(distanceToMonster > 500):
-					currentState = states.attacking
+			var direction = sign(global_position.x-lastSeenSpot.x)
+			walkingDirection = direction
+			move(walkingDirection, false)
+			var distanceToMonster = global_position.distance_to(lastSeenSpot)
+			if(distanceToMonster > 500):
+				currentState = states.investigating
+			
+			if(walkingDirection != 0):
+				if(walkingDirection < 0):
+					flash_light.rotation = PI
+				else:
+					flash_light.rotation = 0
+		states.scared:
+			var direction = sign(global_position.x-lastSeenSpot.x)
+			walkingDirection = direction
+			move(walkingDirection, false)
+			if(walkingDirection != 0):
+				if(walkingDirection < 0):
+					flash_light.rotation = PI
+				else:
+					flash_light.rotation = 0
 		states.investigating:
 			var direction = sign(lastSeenSpot.x-global_position.x)
 			if(abs(lastSeenSpot.x-global_position.x) > 100):
 				walkingDirection = direction
 			else:
 				walkingDirection = 0
+				currentState = states.wonder
 			move(walkingDirection, true)
+			
+			var directionToLastSeenSpot = global_position.angle_to_point(lastSeenSpot)
+			flash_light.rotation = directionToLastSeenSpot
+			
 			if(targetMonster != null):
 				currentState = states.attacking
 		states.gettingHurt:
-			bodyStrength += 0.001
-			if(bodyStrength >= 1):
+			bodyStrength += 0.005
+			velocity = Vector2.ZERO
+			if(bodyStrength >= 0.5):
 				bodyStrength = 1
-				currentState = states.runningAway
+				currentState = states.scared
 		states.mindControlled:
 			pass
 	
@@ -141,6 +168,7 @@ func _physics_process(delta):
 	newPos += velocity
 	global_position = lerp(global_position, newPos, 0.1)
 
+@rpc("any_peer", "reliable", "call_local")
 func removeLimb(limb:RigidBody2D):
 	physicsLimbs.erase(limb)
 	walkingLimbs.erase(limb)
@@ -162,11 +190,11 @@ func findClosestMonster():
 	var closestMonster = null
 	var bestDist = INF
 	for player:CharacterBody2D in Globals.players:
-		line_of_sight.target_position.x = livingLimbs[0].global_position.distance_to(player.global_position)
+		line_of_sight.target_position.x = livingLimbs[0].global_position.distance_to(player.global_position)-100
 		line_of_sight.look_at(player.global_position)
 		line_of_sight.force_raycast_update()
 		
-		var isPlayerInSight = Geometry2D.is_point_in_polygon(to_local(player.global_position), sight.polygon)
+		var isPlayerInSight = Geometry2D.is_point_in_polygon(to_local(player.global_position).rotated(-flash_light.global_rotation), sight.polygon)
 		
 		var dist = global_position.distance_to(player.global_position)
 		if dist < bestDist && !line_of_sight.is_colliding() && isPlayerInSight:
@@ -178,11 +206,13 @@ func gunLogic(target):
 	if(weapon == null):
 		return
 	
-	weapon.shoot()
+	weapon.shoot.rpc()
 	$TargetRight.global_position = target
 	$TargetLeft.global_position = weapon.otherHand.global_position
 
 func move(direction, walking):
+	$TargetRight.global_position = $torso/kneck/head.global_position + Vector2(50*direction, 0)
+	$TargetLeft.global_position = weapon.otherHand.global_position
 	if(direction > 0):
 		if(walking):
 			$"../AnimationPlayer".play("walkRight")
@@ -203,8 +233,7 @@ func move(direction, walking):
 				velocity.x = direction*50
 			else:
 				velocity.x = direction*200
-		else:
-			velocity.y += 2
+	velocity.y += 10
 
 
 func processLimbs(delta):
@@ -216,7 +245,7 @@ func processLimbs(delta):
 		var current_transform: Vector2 = limb.global_position
 		var rotation_difference = angle_difference(limb.global_rotation, boneTo.global_rotation)
 		var position_difference:Vector2 = boneTo.global_position - limb.global_position
-
+		
 		var force: Vector2 = hookes_law(position_difference, limb.linear_velocity, linear_spring_stiffness, linear_spring_damping) * HP/maxHP * limb.strengthMultiplyer * bodyStrength
 		force = force.limit_length(max_linear_force)
 		limb.linear_velocity += (force * delta)

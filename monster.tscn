@@ -21,6 +21,18 @@ properties/3/replication_mode = 2
 properties/4/path = NodePath("jaws:position")
 properties/4/spawn = true
 properties/4/replication_mode = 2
+properties/5/path = NodePath("jaws/Polygon2D:position")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("jaws/Polygon2D2:position")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath(".:jawShake")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath(".:bitingObject")
+properties/8/spawn = true
+properties/8/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_mrqeg"]
 length = 0.001

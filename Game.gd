@@ -74,7 +74,7 @@ func add_player_text_box(pid):
 func add_player(pid):
 	var player = PLAYER.instantiate()
 	player.name = str(pid)
-	player.global_position = find_child("SpawnPoint", true, false).global_position
+	player.global_position = find_child("SpawnPoint", true, false).global_position+Vector2(randf_range(-50, 50), 0)
 	Globals.players.append(player)
 	return player
 

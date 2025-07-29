@@ -15,6 +15,7 @@ func _process(delta: float) -> void:
 	if(ReloadTime > 0):
 		ReloadTime -= delta
 
+@rpc("any_peer", "reliable", "call_local")
 func shoot():
 	if(ReloadTime > 0):
 		return

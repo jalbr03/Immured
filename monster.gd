@@ -9,6 +9,7 @@ var jumping = false
 var currentWeb:Line2D = null
 
 @export var jawShake = false
+@export var bitingObject:Node2D = null
 
 @onready var floorRayCast = $FloorRayCast
 @onready var floor_normal_ray_cast: RayCast2D = $FloorNormalRayCast
@@ -77,10 +78,11 @@ func _physics_process(delta: float) -> void:
 	var pressingDown = Input.is_action_pressed("down")
 	
 	if(biting):
-		bite()
+		bite.rpc()
 	else:
 		if(biteReleased):
 			bitingList.clear()
+			bitingObject = null
 		jaws.scale = lerp(jaws.scale, Vector2.ONE*0.6, 0.1)
 		jaws.position = lerp(jaws.position, Vector2.ZERO, 0.1)
 		jawBottom.position = lerp(jaws.position, Vector2(0, sin(Time.get_unix_time_from_system()*5)*100), 0.1)
@@ -136,12 +138,14 @@ func rotateToWall(floorNormal1, floorNormal2):
 	
 	rotation = lerp_angle(rotation, floorDirection.angle(),0.1)
 
+@rpc("any_peer", "reliable", "call_local")
 func bite():
-	if(jawShake && bitingList.size() > 0):
-		var bodyToBit = bitingList[0]
-		bodyToBit.takeDamage(0.01)
-		var directionToJaws = global_position - bodyToBit.global_position + jaws.position.rotated(rotation)
-		bodyToBit.linear_velocity = directionToJaws*50
+	print(bitingObject)
+	if(jawShake && bitingObject != null && bitingObject.has_method("takeDamage")):
+		#var bodyToBit = bitingObject
+		bitingObject.takeDamage(0.01)
+		var directionToJaws = global_position - bitingObject.global_position + jaws.position.rotated(rotation)
+		bitingObject.linear_velocity = directionToJaws*50
 			
 	
 	jaws.scale = lerp(jaws.scale, Vector2.ONE, 0.1)
@@ -188,6 +192,8 @@ func _on_biting_hit_box_body_entered(body: Node2D) -> void:
 	if(body is RigidBody2D && body.is_in_group("canTakeDamage") && !jawShake):
 		if(!bitingList.has(body)):
 			bitingList.append(body)
+		
+		bitingObject = bitingList[0]
 
 
 func _on_biting_hit_box_body_exited(body: Node2D) -> void:
