@@ -1,14 +1,16 @@
 extends Node2D
 
 @export var otherHand:Marker2D
-@export var requoil = 100
+@export var requoil = 1
 var gunHolder:Node2D
 var mainHoldingHand:Node2D
-@export var maxReloadTime = 1
+@export var maxReloadTime = 0.5
 @export var bullet: PackedScene
 var ReloadTime = 0
 
 func _process(delta: float) -> void:
+	if(mainHoldingHand == null):
+		return
 	global_position = mainHoldingHand.global_position
 	scale.y = sign(global_position.x-gunHolder.global_position.x)
 	rotation = mainHoldingHand.global_rotation+PI/2

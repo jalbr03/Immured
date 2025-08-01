@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://svpbsj0eu6fp"]
+[gd_scene load_steps=15 format=3 uid="uid://svpbsj0eu6fp"]
 
 [ext_resource type="Script" uid="uid://w6ktp7gyrjh0" path="res://monster.gd" id="1_s3gyj"]
+[ext_resource type="Script" uid="uid://do83bxhauru2d" path="res://camera.gd" id="2_mrqeg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mrqeg"]
 radius = 31.4006
@@ -33,6 +34,9 @@ properties/7/replication_mode = 2
 properties/8/path = NodePath(".:bitingObject")
 properties/8/spawn = true
 properties/8/replication_mode = 2
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ga5te"]
+radius = 40.0125
 
 [sub_resource type="Animation" id="Animation_mrqeg"]
 length = 0.001
@@ -72,22 +76,10 @@ tracks/2/keys = {
 "update": 0,
 "values": [Vector2(0, 0)]
 }
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("..:jawShake")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
 
 [sub_resource type="Animation" id="Animation_s3gyj"]
 resource_name = "biting"
-length = 0.6072
+length = 0.4707
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -95,10 +87,10 @@ tracks/0/path = NodePath("Polygon2D:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.233333, 0.466667, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.233333, 0.466667),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(0, 50), Vector2(0, 60), Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(0, 50), Vector2(0, 60)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -107,10 +99,10 @@ tracks/1/path = NodePath("Polygon2D2:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.233333, 0.466667, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.233333, 0.466667),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(0, -50), Vector2(0, -60), Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(0, -50), Vector2(0, -60)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -119,22 +111,10 @@ tracks/2/path = NodePath(".:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.6),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(0, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("..:jawShake")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.599521),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [false, true]
+"values": [Vector2(0, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_ga5te"]
@@ -163,6 +143,24 @@ _data = {
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_s3gyj"]
 radius = 90.7965
+
+[sub_resource type="Gradient" id="Gradient_s3gyj"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mrqeg"]
+gradient = SubResource("Gradient_s3gyj")
+width = 9
+
+[sub_resource type="Gradient" id="Gradient_ga5te"]
+offsets = PackedFloat32Array(0.792208, 0.795455, 0.996753, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.038961)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vr0w3"]
+gradient = SubResource("Gradient_ga5te")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
 [node name="Monster" type="CharacterBody2D" groups=["canTakeDamage"]]
 collision_layer = 10
@@ -214,13 +212,20 @@ target_position = Vector2(0, 200)
 hit_from_inside = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.5, 0.5)
 rotation_smoothing_enabled = true
+script = ExtResource("2_mrqeg")
 
 [node name="Legs" type="Node2D" parent="."]
 
 [node name="WebCast" type="RayCast2D" parent="."]
 target_position = Vector2(2000, 0)
+
+[node name="WebCastBodyCheck" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WebCastBodyCheck"]
+shape = SubResource("CircleShape2D_ga5te")
 
 [node name="jaws" type="Node2D" parent="."]
 
@@ -246,6 +251,22 @@ collision_mask = 15
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="jaws/bitingHitBox"]
 shape = SubResource("CircleShape2D_s3gyj")
+
+[node name="Target" type="Node2D" parent="."]
+top_level = true
+light_mask = 2
+visibility_layer = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Target"]
+texture = SubResource("GradientTexture2D_mrqeg")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Target"]
+rotation = 1.5708
+texture = SubResource("GradientTexture2D_mrqeg")
+
+[node name="Sprite2D3" type="Sprite2D" parent="Target"]
+rotation = 1.5708
+texture = SubResource("GradientTexture2D_vr0w3")
 
 [connection signal="body_entered" from="jaws/bitingHitBox" to="." method="_on_biting_hit_box_body_entered"]
 [connection signal="body_exited" from="jaws/bitingHitBox" to="." method="_on_biting_hit_box_body_exited"]

@@ -18,7 +18,8 @@ func _ready():
 		if child is PhysicalBone2D:
 			call_child_recursive(child, update_bone)
 	
-	weapon.gunHolder = gunHoldFrom
-	weapon.mainHoldingHand = $PB_upperArmRight/Hand
-	$Skeleton2D.weapon = weapon
-	get_parent().add_child(weapon)
+	if(weapon != null):
+		weapon.gunHolder = gunHoldFrom
+		weapon.mainHoldingHand = $PB_upperArmRight/Hand
+		$Skeleton2D.weapon = weapon
+		get_parent().add_child(weapon)

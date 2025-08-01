@@ -3,13 +3,15 @@ extends Line2D
 var slingTo:Vector2
 var startGlobalPosition
 var globalPositions = []
+var objectConectedTo = null
+var connectedPointOffset = Vector2.ZERO
 @onready var web_check: RayCast2D = $webCheck
 @onready var un_wind_check: RayCast2D = $unWindCheck
 const WEB_COLLISION = preload("res://web_collision.tscn")
 var webCheckMinDistance = 20
 var isSetWeb = false
 var settingDown = false
-var settingDownDelay = 600
+var settingDownDelay = 1
 
 func _ready() -> void:
 	web_check.collide_with_areas = true
@@ -17,18 +19,31 @@ func _ready() -> void:
 	startGlobalPosition = global_position
 	for point:Vector2 in points:
 		globalPositions.append(to_global(point))
+	
+	if(objectConectedTo != null):
+		connectedPointOffset = to_global(points[points.size()-1]) - objectConectedTo.global_position
 
 func _process(delta: float) -> void:
 	if(settingDown && !isSetWeb):
-		settingDownDelay -= 1
+		settingDownDelay -= delta
 		if(settingDownDelay <= 0):
 			setWeb()
 	
+	global_rotation = 0
+	
 	if(!is_multiplayer_authority() || isSetWeb):
+		#setWebUpdates()
 		return
 	
-	global_rotation = 0
 	updateWeb()
+
+#func setWebUpdates():
+	#if(objectConectedTo != null):
+		#globalPositions[globalPositions.size()-1] = objectConectedTo.global_position+connectedPointOffset
+		#var globalPoint:Vector2 = globalPositions[globalPositions.size()-1]
+		#points[points.size()-1] = globalPoint-global_position
+		#if(objectConectedTo is RigidBody2D):
+			#objectConectedTo.linear_velocity = globalPoint.direction_to(objectConectedTo.global_position)*1000
 
 func updateWeb():
 	web_check.target_position = points[1]-(points[1].normalized()*10)
@@ -50,6 +65,11 @@ func updateWeb():
 	for i in range(1, globalPositions.size()):
 		var globalPoint = globalPositions[i]
 		points[i] = globalPoint-global_position
+	#if(objectConectedTo != null):
+		#globalPositions[globalPositions.size()-1] = objectConectedTo.global_position+connectedPointOffset
+		#if(objectConectedTo is RigidBody2D):
+			#objectConectedTo.linear_velocity = -globalPositions[globalPositions.size()-1].direction_to(objectConectedTo.global_position)*1000
+		#points[points.size()-1] += (objectConectedTo.global_position-global_position)
 
 func insertPointToPointsAndGlobalPositions(index, pointLocal, pointGlobal):
 	add_point(pointLocal, index)

@@ -1,7 +1,5 @@
 extends Skeleton2D
 
-@export var target_skeleton: Skeleton3D
-
 @export var linear_spring_stiffness: float = 120.0
 @export var linear_spring_damping: float = 40.0
 @export var max_linear_force: float = 9999.0
@@ -25,12 +23,13 @@ enum states {
 	scared,
 	investigating,
 	gettingHurt,
+	hide,
 	gettingUp,
 	mindControlled
 }
 
 var currentState = states.wonder
-var walkingDirection = 0
+var walkingDirection = randi_range(-1, 1)
 var lastSeenSpot:Vector2 = Vector2.ZERO
 
 var maxHP = 10
@@ -44,6 +43,9 @@ var weaponState
 @onready var line_of_sight: RayCast2D = $"../PB_torso/LineOfSight"
 @onready var sight: Polygon2D = $"../PB_Head/flashLight/sight"
 @onready var flash_light: Node2D = $"../PB_Head/flashLight"
+@onready var floor_check: RayCast2D = $"../PB_torso/floorCheck"
+@onready var wall_cast: RayCast2D = $"../PB_torso/wallCast"
+@onready var floor_dist: RayCast2D = $"../PB_torso/floorDist"
 
 @onready var bonesToPath = [
 	$torso, 
@@ -79,7 +81,23 @@ func _physics_process(delta):
 		return
 	var newPos:Vector2 = $"../PB_torso".global_position
 	
+	if(randi_range(0, 3) == 0):
+		enemyAI()
+	
+	floor_dist.target_position.x = walkingDirection*50
+	if(floor_dist.is_colliding()):
+		velocity.y = -(1/(floor_dist.get_collision_point().y-global_position.y)*800)
+	velocity.y += 6
+	
+	newPos += velocity
+	global_position = lerp(global_position, newPos, 0.1)
+
+func enemyAI():
 	var targetMonster:CharacterBody2D = findClosestMonster()
+	
+	if(walkingDirection != 0):
+		wall_cast.scale.x = walkingDirection
+		floor_check.scale.x = walkingDirection
 	
 	if(targetMonster != null):
 		lastSeenSpot = targetMonster.global_position
@@ -87,7 +105,9 @@ func _physics_process(delta):
 	match currentState:
 		states.wonder:
 			move(walkingDirection, true)
-			var randomNumber = randi_range(0, 100)
+			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
+				walkingDirection = -walkingDirection
+			var randomNumber = randi_range(0, 50)
 			if(randomNumber == 0):
 				walkingDirection = randi_range(-1, 1)
 			if(targetMonster != null):
@@ -107,16 +127,20 @@ func _physics_process(delta):
 				
 				flash_light.rotation = directionToMonster
 				
+				if(distanceToMonsterx > 800):
+					direction = walkingDirection
 				if(distanceToMonsterx < 800):
-					direction = 0
-					walkingDirection = direction
-				if(distanceToMonsterx > 1000):
-					walkingDirection = direction
+					direction *= -1
 				if(distanceToMonster < 300):
-					currentState = states.runningAway
+					if(wall_cast.is_colliding() || !floor_check.is_colliding()):
+						direction = 0
+					else:
+						currentState = states.runningAway
+				
+				walkingDirection = direction
 				
 				move(walkingDirection, false)
-				gunLogic(targetMonster.global_position)
+				gunLogic(lastSeenSpot)
 			else:
 				currentState = states.investigating
 		states.runningAway:
@@ -127,6 +151,10 @@ func _physics_process(delta):
 			if(distanceToMonster > 500):
 				currentState = states.investigating
 			
+			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
+				currentState = states.attacking
+				move(0, false)
+			
 			if(walkingDirection != 0):
 				if(walkingDirection < 0):
 					flash_light.rotation = PI
@@ -136,11 +164,16 @@ func _physics_process(delta):
 			var direction = sign(global_position.x-lastSeenSpot.x)
 			walkingDirection = direction
 			move(walkingDirection, false)
+			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
+				currentState = states.attacking
 			if(walkingDirection != 0):
 				if(walkingDirection < 0):
 					flash_light.rotation = PI
 				else:
 					flash_light.rotation = 0
+		states.hide:
+			$"../AnimationPlayer".play("hide")
+			move(0, false)
 		states.investigating:
 			var direction = sign(lastSeenSpot.x-global_position.x)
 			if(abs(lastSeenSpot.x-global_position.x) > 100):
@@ -163,10 +196,6 @@ func _physics_process(delta):
 				currentState = states.scared
 		states.mindControlled:
 			pass
-	
-	
-	newPos += velocity
-	global_position = lerp(global_position, newPos, 0.1)
 
 @rpc("any_peer", "reliable", "call_local")
 func removeLimb(limb:RigidBody2D):
@@ -212,7 +241,8 @@ func gunLogic(target):
 
 func move(direction, walking):
 	$TargetRight.global_position = $torso/kneck/head.global_position + Vector2(50*direction, 0)
-	$TargetLeft.global_position = weapon.otherHand.global_position
+	if(weapon != null):
+		$TargetLeft.global_position = weapon.otherHand.global_position
 	if(direction > 0):
 		if(walking):
 			$"../AnimationPlayer".play("walkRight")
@@ -228,13 +258,10 @@ func move(direction, walking):
 		$"../AnimationPlayer".play("RESET")
 	for limb:RigidBody2D in walkingLimbs:
 		if limb.get_colliding_bodies().size() > 0:
-			velocity.y = -limb.linear_velocity.y*2
 			if(walking):
 				velocity.x = direction*50
 			else:
 				velocity.x = direction*200
-	velocity.y += 10
-
 
 func processLimbs(delta):
 	var i = 0
@@ -253,6 +280,9 @@ func processLimbs(delta):
 		var torque = hookes_law(Vector2(rotation_difference, 0), Vector2(limb.angular_velocity, 0), angular_spring_stiffness, angular_spring_damping) * HP/maxHP * limb.strengthMultiplyer * bodyStrength
 		torque = torque.limit_length(max_angular_force)
 		limb.angular_velocity += torque.x * delta
+		
+		if(position_difference.distance_to(Vector2.ZERO) > 500):
+			limb.removeSelfFromBody.rpc()
 		
 		i += 1
 

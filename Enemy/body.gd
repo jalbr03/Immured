@@ -9,18 +9,24 @@ var frozenPosition:Vector2
 
 @rpc("any_peer", "reliable", "call_local")
 func takeDamage(damage):
+	frozen = false
 	if($"../Skeleton2D" == null):
 		return
 	$"../Skeleton2D".takeDamage(damage)
 	limbHP -= damage
 	if(limbHP <= 0):
-		$"../Skeleton2D".removeLimb.rpc(self)
-		reparent(get_parent().get_parent())
+		removeSelfFromBody.rpc()
+
+@rpc("any_peer", "reliable", "call_local")
+func removeSelfFromBody():
+	frozen = false
+	$"../Skeleton2D".removeLimb.rpc(self)
+	reparent(get_parent().get_parent())
 
 func _physics_process(delta: float) -> void:
 	if(frozen):
 		var directionPosition = frozenPosition - global_position
-		linear_velocity = directionPosition*100
+		linear_velocity = directionPosition*20
 
 @rpc("any_peer", "reliable", "call_local")
 func freezeLimb(freezePosition):

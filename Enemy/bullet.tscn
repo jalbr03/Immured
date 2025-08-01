@@ -15,7 +15,7 @@ target_position = Vector2(1000, 0)
 width = 4.0
 
 [node name="Area2D" type="Area2D" parent="." groups=["Damage"]]
-collision_layer = 2
+collision_layer = 0
 collision_mask = 9
 
 [node name="hurtCollision" type="CollisionShape2D" parent="Area2D"]
