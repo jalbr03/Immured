@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dafx1am402ipa"]
+[gd_scene load_steps=25 format=3 uid="uid://dafx1am402ipa"]
 
 [ext_resource type="Script" uid="uid://btyhem5exmoop" path="res://Enemy/EnemyHuman.gd" id="1_px1sc"]
 [ext_resource type="Script" uid="uid://br18rm6awsxa0" path="res://Enemy/EnemySkeleton.gd" id="2_eqilm"]
@@ -14,6 +14,11 @@ colors = PackedColorArray(1, 1, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_eqilm"]
 gradient = SubResource("Gradient_am0pq")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ncf7h"]
+radius = 732.446
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eqilm"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_am0pq"]
 radius = 21.0047
@@ -725,8 +730,8 @@ script = ExtResource("1_px1sc")
 gunHoldFrom = NodePath("PB_torso/gunHoldFrom")
 
 [node name="PB_torso" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 gravity_scale = 4.0
 script = ExtResource("3_am0pq")
 limbAbilitys = Array[int]([3])
@@ -783,12 +788,30 @@ position = Vector2(0, -101)
 target_position = Vector2(0, 238.645)
 collide_with_areas = true
 
+[node name="awarnessArea" type="Area2D" parent="PB_torso"]
+collision_layer = 0
+collision_mask = 18
+priority = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PB_torso/awarnessArea"]
+shape = SubResource("CircleShape2D_ncf7h")
+debug_color = Color(0.28144, 0.495053, 9.62615e-08, 0.419608)
+
 [node name="PB_Head" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(1, -102)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
-limbAbilitys = Array[int]([3])
+limbAbilitys = Array[int]([3, 5])
+
+[node name="ears" type="Area2D" parent="PB_Head"]
+position = Vector2(1, -22)
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PB_Head/ears"]
+scale = Vector2(2.05216, 2.05216)
+shape = SubResource("CircleShape2D_eqilm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_Head"]
 position = Vector2(0, -21.765)
@@ -807,8 +830,8 @@ color = Color(1, 1, 1, 0)
 polygon = PackedVector2Array(-106, -4, -109, -136, 405, -136, 1148, -545, 1148, 536, 403, 179, -109, 183)
 
 [node name="PB_hipLeft" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 limbAbilitys = Array[int]([1])
 
@@ -823,8 +846,8 @@ texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PB_upperLegLeft" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(0, 50)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 limbAbilitys = Array[int]([1])
 
@@ -842,8 +865,8 @@ node_a = NodePath("../../PB_hipLeft")
 node_b = NodePath("..")
 
 [node name="PB_hipRight" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 limbAbilitys = Array[int]([1])
 
@@ -858,8 +881,8 @@ texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PB_upperLegRight" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(0, 50)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 limbAbilitys = Array[int]([1])
 
@@ -878,8 +901,8 @@ node_b = NodePath("..")
 
 [node name="PB_sholderLeft" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(1, -102)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_sholderLeft"]
@@ -893,10 +916,10 @@ texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PB_upperArmLeft" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(1, -50)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
-limbAbilitys = Array[int]([2, 4])
+limbAbilitys = Array[int]([4, 2])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperArmLeft"]
 position = Vector2(0.5, 24.5)
@@ -916,8 +939,8 @@ position = Vector2(1, 48)
 
 [node name="PB_sholderRight" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(1, -102)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_sholderRight"]
@@ -931,10 +954,10 @@ texture = SubResource("GradientTexture2D_eqilm")
 
 [node name="PB_upperArmRight" type="RigidBody2D" parent="." groups=["canStickToWeb", "canTakeDamage"]]
 position = Vector2(1, -50)
-collision_layer = 2
-collision_mask = 5
+collision_layer = 18
+collision_mask = 133
 script = ExtResource("3_am0pq")
-limbAbilitys = Array[int]([2, 4])
+limbAbilitys = Array[int]([4, 2, 6])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PB_upperArmRight"]
 position = Vector2(0.5, 24.5)

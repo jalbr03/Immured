@@ -6,10 +6,12 @@
 b = Vector2(1, 0)
 
 [node name="webCollision" type="Area2D" groups=["solid"]]
+collision_layer = 65
 collision_mask = 15
 script = ExtResource("1_281md")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("SegmentShape2D_otrti")
 
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

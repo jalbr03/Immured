@@ -7,11 +7,14 @@ var objectConectedTo = null
 var connectedPointOffset = Vector2.ZERO
 @onready var web_check: RayCast2D = $webCheck
 @onready var un_wind_check: RayCast2D = $unWindCheck
+@onready var SOUND = preload("res://sound.tscn")
 const WEB_COLLISION = preload("res://web_collision.tscn")
 var webCheckMinDistance = 20
 var isSetWeb = false
 var settingDown = false
 var settingDownDelay = 1
+
+
 
 func _ready() -> void:
 	web_check.collide_with_areas = true
@@ -19,6 +22,8 @@ func _ready() -> void:
 	startGlobalPosition = global_position
 	for point:Vector2 in points:
 		globalPositions.append(to_global(point))
+	
+	makeSound.rpc(points[points.size()-1], 100)
 	
 	if(objectConectedTo != null):
 		connectedPointOffset = to_global(points[points.size()-1]) - objectConectedTo.global_position
@@ -44,6 +49,13 @@ func _process(delta: float) -> void:
 		#points[points.size()-1] = globalPoint-global_position
 		#if(objectConectedTo is RigidBody2D):
 			#objectConectedTo.linear_velocity = globalPoint.direction_to(objectConectedTo.global_position)*1000
+
+@rpc("any_peer", "reliable", "call_local")
+func makeSound(location, volume):
+	var sound:Area2D = SOUND.instantiate()
+	sound.position = location
+	sound.volume = volume
+	add_child(sound)
 
 func updateWeb():
 	web_check.target_position = points[1]-(points[1].normalized()*10)

@@ -17,4 +17,5 @@ script = ExtResource("1_nnkw1")
 spawn_path = NodePath("..")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -17.545)
 texture = SubResource("GradientTexture2D_s6n2o")

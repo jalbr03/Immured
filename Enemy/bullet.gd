@@ -7,6 +7,7 @@ extends Node2D
 
 
 func _ready() -> void:
+	ray_cast.collide_with_areas = true
 	ray_cast.force_raycast_update()
 	line.add_point(Vector2.ZERO)
 	var endPoint = to_global(ray_cast.target_position)

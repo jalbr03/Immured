@@ -15,6 +15,7 @@ var lastJawPos = Vector2.ZERO
 @onready var floorRayCast:RayCast2D = $FloorRayCast
 @onready var floor_normal_ray_cast: RayCast2D = $FloorNormalRayCast
 @onready var floor_normal_ray_cast_2: RayCast2D = $FloorNormalRayCast2
+@onready var is_on_web: Area2D = $isOnWeb
 @onready var web_cast: RayCast2D = $WebCast
 @onready var web_cast_body_check: Area2D = $WebCastBodyCheck
 @onready var target: Node2D = $Target
@@ -25,6 +26,8 @@ var lastJawPos = Vector2.ZERO
 @onready var biting_hit_box: Area2D = $jaws/bitingHitBox
 var bitingList:Array = []
 
+var walkingSoundCoolDown = 0
+@onready var SOUND = preload("res://sound.tscn")
 @onready var web = preload("res://web.tscn")
 @onready var legRight = preload("res://leg_right.tscn")
 @onready var legLeft = preload("res://leg_left.tscn")
@@ -68,10 +71,18 @@ func _physics_process(delta: float) -> void:
 	var floorNormal1:Vector2 = floor_normal_ray_cast.get_collision_point()
 	var floorNormal2:Vector2 = floor_normal_ray_cast_2.get_collision_point()
 	
+	if(is_on_web.get_overlapping_areas().size() == 0 && walkingSoundCoolDown <= 0 && floorRayCast.is_colliding()):
+		makeSound.rpc(global_position, 200)
+		walkingSoundCoolDown = 1
+	
+	if(walkingSoundCoolDown > 0):
+		walkingSoundCoolDown -= delta
+	
 	if(!is_multiplayer_authority()):
 		return
 	
 	rotateToWall(floorNormal1, floorNormal2)
+	
 	
 	var inputAxis = Input.get_axis("Left", "Right")
 	var input : Vector2 = Vector2(inputAxis, 0)
@@ -86,12 +97,21 @@ func _physics_process(delta: float) -> void:
 	var biting = Input.is_action_pressed("bite")
 	var biteReleased = Input.is_action_just_released("bite")
 	var pressingDown = Input.is_action_pressed("down")
+	var toggleCameraRotation = Input.is_action_just_pressed("rotateCamera")
+	
+	if(toggleCameraRotation):
+		$Camera2D.ignore_rotation = !$Camera2D.ignore_rotation
 	
 	if(startBiting):
 		var overlappingBodies:Array = $jaws/bitingHitBox.get_overlapping_bodies()
-		if(!overlappingBodies.find(bitingObject, 0)):
+		#if(!overlappingBodies.find(bitingObject, 0)):
+			#bitingObject = null
+		if(overlappingBodies.size() == 0):
 			bitingObject = null
+		else:
+			bitingObject = overlappingBodies[0]
 		jaw_animation.play("biting")
+		makeSound.rpc(global_position, 100)
 	if(biting):
 		bite.rpc()
 	else:
@@ -165,6 +185,13 @@ func rotateToWall(floorNormal1, floorNormal2):
 	rotation = lerp_angle(rotation, floorDirection.angle(),0.1)
 
 @rpc("any_peer", "reliable", "call_local")
+func makeSound(location, volume):
+	var sound:Area2D = SOUND.instantiate()
+	sound.global_position = location
+	sound.volume = volume
+	get_parent().add_child(sound)
+
+@rpc("any_peer", "reliable", "call_local")
 func bite():
 	if(bitingObject != null):
 		jawBottom.position = lerp(jawBottom.position, Vector2.ZERO, 0.5)
@@ -181,6 +208,7 @@ func bite():
 			bitingObject.linear_velocity = directionToJaws*50
 			var shakeSpeed = lastJawPos.distance_to(jaws.position)
 			if(shakeSpeed > 20):
+				makeSound.rpc(global_position, 200)
 				bitingObject.takeDamage(0.03)
 		
 	
@@ -189,7 +217,7 @@ func bite():
 	#if(!jaw_animation.is_playing() && !jawShake):
 		#jaw_animation.play("biting")
 	#if(jawShake):
-		##jaws.position.x = lerp(jaws.position.x, sin(Time.get_unix_time_from_system()*30)*100, 0.5)
+		#jaws.position.x = lerp(jaws.position.x, sin(Time.get_unix_time_from_system()*30)*100, 0.5)
 		#jaws.position.x = lerp(jaws.position.x, get_local_mouse_position().x/10, 0.5)
 
 @rpc("any_peer", "reliable", "call_local")

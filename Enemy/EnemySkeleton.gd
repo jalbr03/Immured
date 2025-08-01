@@ -10,27 +10,32 @@ extends Skeleton2D
 
 var velocity:Vector2 = Vector2.ZERO
 var physicsLimbs:Array
-var walkingLimbs
+var walkingLimbs:Array
 var gunHoldingLimbs
 var livingLimbs
+var hearingLimbs
+var mainHoldingLimbs
 var numberOfLivingLimbs
 @export var bodyStrength = 1
+var targetSound = null
 
 enum states {
-	wonder,
-	attacking,
-	runningAway,
-	scared,
-	investigating,
-	gettingHurt,
-	hide,
-	gettingUp,
+	patrolling,
+	suspicious,
+	alerted,
+	hostile,
+	searching,
+	callingForBackup,
+	stuck,
+	getRidOfWebs,
 	mindControlled
 }
+var stateTimer = 0
 
-var currentState = states.wonder
+var currentState = states.patrolling
 var walkingDirection = randi_range(-1, 1)
 var lastSeenSpot:Vector2 = Vector2.ZERO
+var lastSeenWeb: Vector2 = Vector2.ZERO
 
 var maxHP = 10
 @export var HP = 10
@@ -39,6 +44,7 @@ enum weaponStates{
 	rest,
 	aming
 }
+var stuckLimb = null
 var weaponState
 @onready var line_of_sight: RayCast2D = $"../PB_torso/LineOfSight"
 @onready var sight: Polygon2D = $"../PB_Head/flashLight/sight"
@@ -46,6 +52,9 @@ var weaponState
 @onready var floor_check: RayCast2D = $"../PB_torso/floorCheck"
 @onready var wall_cast: RayCast2D = $"../PB_torso/wallCast"
 @onready var floor_dist: RayCast2D = $"../PB_torso/floorDist"
+@onready var awarness_area: Area2D = $"../PB_torso/awarnessArea"
+
+@onready var SOUND = preload("res://sound.tscn")
 
 @onready var bonesToPath = [
 	$torso, 
@@ -66,6 +75,8 @@ func _ready():
 	walkingLimbs = filterLimbs(Globals.abilities.walk)
 	gunHoldingLimbs = filterLimbs(Globals.abilities.hold)
 	livingLimbs = filterLimbs(Globals.abilities.live)
+	hearingLimbs = filterLimbs(Globals.abilities.hear)
+	mainHoldingLimbs = filterLimbs(Globals.abilities.mainHolding)
 	numberOfLivingLimbs = livingLimbs.size()
 	for limb:RigidBody2D in physicsLimbs:
 		limb.contact_monitor = true
@@ -82,7 +93,7 @@ func _physics_process(delta):
 	var newPos:Vector2 = $"../PB_torso".global_position
 	
 	if(randi_range(0, 3) == 0):
-		enemyAI()
+		enemyAI(delta)
 	
 	floor_dist.target_position.x = walkingDirection*50
 	if(floor_dist.is_colliding()):
@@ -92,8 +103,21 @@ func _physics_process(delta):
 	newPos += velocity
 	global_position = lerp(global_position, newPos, 0.1)
 
-func enemyAI():
+func enemyAI(delta):
+	if(bodyStrength < 1):
+		bodyStrength += delta
+	elif(bodyStrength > 1):
+		bodyStrength = 1
+	
+	if(currentState == states.patrolling):
+		targetSound = null
+	
 	var targetMonster:CharacterBody2D = findClosestMonster()
+	var ears:Area2D
+	if(hearingLimbs.size() > 0):
+		ears = hearingLimbs[0].get_child(0)
+		if(ears.get_overlapping_areas().size() != 0):
+			targetSound = ears.get_overlapping_areas()[0].global_position
 	
 	if(walkingDirection != 0):
 		wall_cast.scale.x = walkingDirection
@@ -103,99 +127,137 @@ func enemyAI():
 		lastSeenSpot = targetMonster.global_position
 	
 	match currentState:
-		states.wonder:
+		states.patrolling:
+			findWebs()
+			lastSeenWeb = Vector2.ZERO
 			move(walkingDirection, true)
-			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
-				walkingDirection = -walkingDirection
-			var randomNumber = randi_range(0, 50)
-			if(randomNumber == 0):
-				walkingDirection = randi_range(-1, 1)
-			if(targetMonster != null):
-				currentState = states.attacking
-			
 			if(walkingDirection != 0):
 				if(walkingDirection < 0):
 					flash_light.rotation = PI
 				else:
 					flash_light.rotation = 0
-		states.attacking:
-			if(targetMonster != null):
-				var direction = sign(targetMonster.global_position.x-global_position.x)
-				var distanceToMonsterx = abs(global_position.x-targetMonster.global_position.x)
-				var distanceToMonster = global_position.distance_to(targetMonster.global_position)
-				var directionToMonster = global_position.angle_to_point(targetMonster.global_position)
-				
-				flash_light.rotation = directionToMonster
-				
-				if(distanceToMonsterx > 800):
-					direction = walkingDirection
-				if(distanceToMonsterx < 800):
-					direction *= -1
-				if(distanceToMonster < 300):
-					if(wall_cast.is_colliding() || !floor_check.is_colliding()):
-						direction = 0
+			if(randi_range(0, 100) == 0):
+				if(walkingDirection != 0):
+					walkingDirection = 0
+				else:
+					if(randi_range(0, 1) == 0):
+						walkingDirection = -1
 					else:
-						currentState = states.runningAway
-				
-				walkingDirection = direction
-				
-				move(walkingDirection, false)
-				gunLogic(lastSeenSpot)
+						walkingDirection = 1
+			if(targetMonster != null):
+				currentState = states.alerted
+			elif(targetSound != null):
+				currentState = states.suspicious
+		states.suspicious:
+			findWebs()
+			look_around(targetSound)
+			if(targetMonster != null):
+				currentState = states.alerted
 			else:
-				currentState = states.investigating
-		states.runningAway:
-			var direction = sign(global_position.x-lastSeenSpot.x)
-			walkingDirection = direction
-			move(walkingDirection, false)
-			var distanceToMonster = global_position.distance_to(lastSeenSpot)
-			if(distanceToMonster > 500):
-				currentState = states.investigating
-			
-			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
-				currentState = states.attacking
-				move(0, false)
-			
-			if(walkingDirection != 0):
-				if(walkingDirection < 0):
-					flash_light.rotation = PI
-				else:
-					flash_light.rotation = 0
-		states.scared:
-			var direction = sign(global_position.x-lastSeenSpot.x)
-			walkingDirection = direction
-			move(walkingDirection, false)
-			if(wall_cast.is_colliding() || !floor_check.is_colliding()):
-				currentState = states.attacking
-			if(walkingDirection != 0):
-				if(walkingDirection < 0):
-					flash_light.rotation = PI
-				else:
-					flash_light.rotation = 0
-		states.hide:
-			$"../AnimationPlayer".play("hide")
-			move(0, false)
-		states.investigating:
-			var direction = sign(lastSeenSpot.x-global_position.x)
-			if(abs(lastSeenSpot.x-global_position.x) > 100):
+				stateTimer += delta
+				if(stateTimer > 3):
+					currentState = states.patrolling
+					stateTimer = 0
+		states.alerted:
+			findWebs()
+			aimWeapon(lastSeenSpot)
+			if(targetMonster != null):
+				currentState = states.hostile
+			else:
+				stateTimer += delta
+				if(stateTimer > 2):
+					currentState = states.searching
+					stateTimer = 0
+		states.hostile:
+			findWebs()
+			chase_player(lastSeenSpot)
+			if(targetMonster != null):
+				aimWeapon(targetMonster.global_position)
+				shootWeapon()
+			else:
+				stateTimer += delta
+				if(stateTimer > 3):
+					currentState = states.callingForBackup
+					stateTimer = 0
+		states.searching:
+			findWebs()
+			search_area()
+			if(targetMonster != null):
+				currentState = states.hostile
+			else:
+				stateTimer += delta
+				if(stateTimer > 1):
+					currentState = states.patrolling
+					stateTimer = 0
+		states.stuck:
+			stateTimer += delta
+			if(stateTimer > 1):
+				call_for_help()
+				stateTimer = 0
+			if(stuckLimb == null):
+				currentState = states.searching
+			else:
+				if(walkingDirection == 0):
+					walkingDirection = sign(global_position.x-stuckLimb.global_position.x)
+				move(-walkingDirection, false)
+		states.getRidOfWebs:
+			var direction = -sign(lastSeenWeb.x-global_position.x)
+			var distance = abs(lastSeenWeb.x-global_position.x)
+			if(distance < 400):
 				walkingDirection = direction
 			else:
 				walkingDirection = 0
-				currentState = states.wonder
 			move(walkingDirection, true)
 			
-			var directionToLastSeenSpot = global_position.angle_to_point(lastSeenSpot)
-			flash_light.rotation = directionToLastSeenSpot
+			aimWeapon(lastSeenWeb)
+			shootWeapon()
 			
-			if(targetMonster != null):
-				currentState = states.attacking
-		states.gettingHurt:
-			bodyStrength += 0.005
-			velocity = Vector2.ZERO
-			if(bodyStrength >= 0.5):
-				bodyStrength = 1
-				currentState = states.scared
-		states.mindControlled:
-			pass
+			if(lastSeenWeb == Vector2.ZERO):
+				if(targetMonster != null):
+					currentState = states.hostile
+				currentState = states.searching
+			
+		states.callingForBackup:
+			move(0, false)
+			call_for_help()
+			currentState = states.searching
+	
+	avoidWebs()
+
+func call_for_help():
+	makeSound(global_position, 500)
+
+func search_area():
+	var direction = sign(lastSeenSpot.x-global_position.x)
+	var distanceToSpotx = abs(global_position.x-lastSeenSpot.x)
+	var directionToSpot = global_position.angle_to_point(lastSeenSpot)
+	
+	move(direction, true)
+	flash_light.rotation = sin(Time.get_unix_time_from_system())*PI/2-PI/2
+
+func chase_player(targetPoint):
+	var direction = sign(targetPoint.x-global_position.x)
+	var distanceToPointx = abs(global_position.x-targetPoint.x)
+	#var distanceToPoint = global_position.distance_to(targetPoint)
+	#var directionToPoint = global_position.angle_to_point(targetPoint)
+	
+	if(distanceToPointx > 500):
+		move(direction, false)
+	else:
+		move(0, false)
+
+func look_around(targetSound):
+	var direction = sign(targetSound.x-global_position.x)
+	var distanceToSoundx = abs(global_position.x-targetSound.x)
+	#var distanceToSound = global_position.distance_to(targetSound)
+	var directionToSound = global_position.angle_to_point(targetSound)
+	
+	if(distanceToSoundx > 20):
+		move(direction, true)
+		flash_light.rotation = directionToSound
+	else:
+		move(0, true)
+		flash_light.rotation = sin(Time.get_unix_time_from_system())*PI/2-PI/2
 
 @rpc("any_peer", "reliable", "call_local")
 func removeLimb(limb:RigidBody2D):
@@ -203,9 +265,18 @@ func removeLimb(limb:RigidBody2D):
 	walkingLimbs.erase(limb)
 	gunHoldingLimbs.erase(limb)
 	livingLimbs.erase(limb)
+	hearingLimbs.erase(limb)
+	mainHoldingLimbs.erase(limb)
+
+@rpc("any_peer", "reliable", "call_local")
+func makeSound(location, volume):
+	var sound:Area2D = SOUND.instantiate()
+	sound.global_position = location
+	sound.volume = volume
+	get_parent().add_child(sound)
 
 func takeDamage(damage):
-	currentState = states.gettingHurt
+	currentState = states.hostile
 	bodyStrength = 0
 	if(HP > 0):
 		HP -= damage
@@ -231,15 +302,46 @@ func findClosestMonster():
 			closestMonster = player
 	return closestMonster
 
-func gunLogic(target):
+func findWebs():
+	if(lastSeenWeb != Vector2.ZERO):
+		currentState = states.getRidOfWebs
+
+func avoidWebs():
+	var bodies = awarness_area.get_overlapping_bodies()
+	var webSeen = false
+	for body in bodies:
+		if(body.is_in_group("canStickToWeb")):
+			#isBodyInSight = Geometry2D.is_point_in_polygon(to_local(body.global_position).rotated(-flash_light.global_rotation), sight.polygon)
+			#print("see body is frozen: " + str(body.frozen)+  " : " + str(body))
+			if(body.frozen):
+				if(lastSeenWeb == Vector2.ZERO):
+					currentState = states.callingForBackup
+				lastSeenWeb = body.frozenPosition
+				webSeen = true
+				break
+	if(!webSeen):
+		lastSeenWeb = Vector2.ZERO
+	
+
+func aimWeapon(target):
 	if(weapon == null):
 		return
 	
-	weapon.shoot.rpc()
+	var directionTotarget = global_position.angle_to_point(target)
+	flash_light.rotation = directionTotarget
+	
 	$TargetRight.global_position = target
 	$TargetLeft.global_position = weapon.otherHand.global_position
 
+func shootWeapon():
+	if(weapon == null || mainHoldingLimbs.size() == 0):
+		return
+	
+	weapon.shoot.rpc()
+
 func move(direction, walking):
+	if(walkingLimbs.size() == 0):
+		direction = 0
 	$TargetRight.global_position = $torso/kneck/head.global_position + Vector2(50*direction, 0)
 	if(weapon != null):
 		$TargetLeft.global_position = weapon.otherHand.global_position
@@ -255,7 +357,8 @@ func move(direction, walking):
 		else:
 			$"../AnimationPlayer".play("runLeft")
 	else:
-		$"../AnimationPlayer".play("RESET")
+		if($"../AnimationPlayer".is_playing()):
+			$"../AnimationPlayer".play("RESET")
 	for limb:RigidBody2D in walkingLimbs:
 		if limb.get_colliding_bodies().size() > 0:
 			if(walking):
@@ -265,6 +368,7 @@ func move(direction, walking):
 
 func processLimbs(delta):
 	var i = 0
+	stuckLimb = null
 	for limb:RigidBody2D in physicsLimbs:
 		var boneTo:Bone2D = bonesToPath[i]
 		
@@ -281,8 +385,12 @@ func processLimbs(delta):
 		torque = torque.limit_length(max_angular_force)
 		limb.angular_velocity += torque.x * delta
 		
-		if(position_difference.distance_to(Vector2.ZERO) > 500):
+		if(position_difference.distance_to(Vector2.ZERO) > 300):
 			limb.removeSelfFromBody.rpc()
+		
+		if(limb.frozen):
+			currentState = states.stuck
+			stuckLimb = limb
 		
 		i += 1
 

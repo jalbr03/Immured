@@ -5,7 +5,14 @@ extends RigidBody2D
 var strengthMultiplyer:float = 1
 var limbHP = 2
 var frozen = false
-var frozenPosition:Vector2
+var frozenPosition:Vector2 = Vector2.ZERO
+
+func _process(delta: float) -> void:
+	#print("limb is frozen: " + str(frozen))
+	#frozen = frozen
+	if(Input.is_action_just_pressed("ui_down")):
+		frozen = true
+		frozenPosition = global_position
 
 @rpc("any_peer", "reliable", "call_local")
 func takeDamage(damage):
@@ -32,3 +39,8 @@ func _physics_process(delta: float) -> void:
 func freezeLimb(freezePosition):
 	frozen = true
 	frozenPosition = freezePosition
+
+@rpc("any_peer", "reliable", "call_local")
+func unFreezeLimb():
+	frozen = false
+	frozenPosition = Vector2.ZERO
