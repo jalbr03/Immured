@@ -83,7 +83,7 @@ func _ready():
 		limb.max_contacts_reported = 100
 
 func _physics_process(delta):
-	if(HP == 0):
+	if(HP == 0 || !get_parent().visible):
 		return
 	processLimbs(delta)
 	if(!is_multiplayer_authority()):

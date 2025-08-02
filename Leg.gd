@@ -63,7 +63,7 @@ func _process(delta: float) -> void:
 		floorCastState = floorCastStates.castOut
 		$FloorCast.position.x = 0
 		$FloorCast.target_position.x = 0
-		$FloorCast.target_position.y = 100
+		$FloorCast.target_position.y = 200
 	
 	nextStepPoint = $FloorCast.get_collision_point()
 	

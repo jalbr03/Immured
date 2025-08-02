@@ -23,3 +23,10 @@ func _ready():
 		weapon.mainHoldingHand = $PB_upperArmRight/Hand
 		$Skeleton2D.weapon = weapon
 		get_parent().add_child(weapon)
+
+func _process(delta: float) -> void:
+	for player in Globals.players:
+		if(player.global_position.distance_to($PB_torso.global_position) > 4000):
+			visible = false
+		else:
+			visible = true

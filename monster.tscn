@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://svpbsj0eu6fp"]
+[gd_scene load_steps=17 format=3 uid="uid://svpbsj0eu6fp"]
 
 [ext_resource type="Script" uid="uid://w6ktp7gyrjh0" path="res://monster.gd" id="1_s3gyj"]
 [ext_resource type="Script" uid="uid://do83bxhauru2d" path="res://camera.gd" id="2_mrqeg"]
@@ -37,6 +37,9 @@ properties/8/replication_mode = 2
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_mrqeg"]
 b = Vector2(0, 153)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vr0w3"]
+radius = 160.312
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ga5te"]
 radius = 40.0125
@@ -200,7 +203,7 @@ text = "player"
 horizontal_alignment = 1
 
 [node name="isOnWeb" type="Area2D" parent="."]
-collision_layer = 64
+collision_layer = 0
 collision_mask = 64
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="isOnWeb"]
@@ -231,6 +234,13 @@ script = ExtResource("2_mrqeg")
 
 [node name="WebCast" type="RayCast2D" parent="."]
 target_position = Vector2(2000, 0)
+
+[node name="webClimb" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 64
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="webClimb"]
+shape = SubResource("CircleShape2D_vr0w3")
 
 [node name="WebCastBodyCheck" type="Area2D" parent="."]
 collision_layer = 0

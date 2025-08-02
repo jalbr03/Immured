@@ -14,8 +14,6 @@ var isSetWeb = false
 var settingDown = false
 var settingDownDelay = 1
 
-
-
 func _ready() -> void:
 	web_check.collide_with_areas = true
 	un_wind_check.collide_with_areas = true
@@ -29,6 +27,8 @@ func _ready() -> void:
 		connectedPointOffset = to_global(points[points.size()-1]) - objectConectedTo.global_position
 
 func _process(delta: float) -> void:
+	if(isSetWeb):
+		return
 	if(settingDown && !isSetWeb):
 		settingDownDelay -= delta
 		if(settingDownDelay <= 0):

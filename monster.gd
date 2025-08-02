@@ -24,6 +24,8 @@ var lastJawPos = Vector2.ZERO
 @onready var jawBottom: Polygon2D = $jaws/Polygon2D
 @onready var jawTop: Polygon2D = $jaws/Polygon2D2
 @onready var biting_hit_box: Area2D = $jaws/bitingHitBox
+@onready var web_climb: Area2D = $webClimb
+
 var bitingList:Array = []
 
 var walkingSoundCoolDown = 0
@@ -84,9 +86,9 @@ func _physics_process(delta: float) -> void:
 	rotateToWall(floorNormal1, floorNormal2)
 	
 	
-	var inputAxis = Input.get_axis("Left", "Right")
-	var input : Vector2 = Vector2(inputAxis, 0)
-	input = input.rotated(rotation)
+	var inputAxisx = Input.get_axis("Left", "Right")
+	var inputAxisy = Input.get_axis("up", "down")
+	var input : Vector2 = Vector2(inputAxisx, inputAxisy)
 	var jump = Input.is_action_just_pressed("Jump")
 	
 	var justPressedSlingWeb = Input.is_action_just_pressed("slingWeb") || Input.is_action_just_pressed("spinWeb")
@@ -132,7 +134,7 @@ func _physics_process(delta: float) -> void:
 		velocity += nextPoint/10
 		look_at(currentWeb.globalPositions[1])
 		rotation -= PI/2
-	elif(pressingSpinWeb && currentWeb != null && !floorRayCast.is_colliding()):
+	elif(pressingSpinWeb && currentWeb != null && !floorRayCast.is_colliding() && web_climb.get_overlapping_areas().size() == 0):
 		var nextPoint = currentWeb.points[1]
 		if(nextPoint.y+global_position.y < global_position.y):
 			velocity.x += nextPoint.x/10
@@ -162,7 +164,13 @@ func _physics_process(delta: float) -> void:
 func movement(input, jump, pressingDown, canMove):
 	if(is_on_floor()):
 		velocity *= 0.9
-	if(floorRayCast.is_colliding() && !pressingDown && canMove):
+	
+	if(web_climb.get_overlapping_areas().size() > 0):
+		input = input.rotated(rotation)
+		velocity += (input*speed-velocity)/10
+	elif(floorRayCast.is_colliding() && !Input.is_action_pressed("down") && canMove):
+		input = Vector2(input.x, 0)
+		input = input.rotated(rotation)
 		velocity += (input*speed-velocity)/10
 		var direction: Vector2 = floorRayCast.global_position.direction_to(floorRayCast.get_collision_point()).normalized()
 		velocity -= direction*(20/clamp(floorRayCast.get_collision_point().distance_to(global_position), 10, INF))*100
@@ -177,7 +185,7 @@ func movement(input, jump, pressingDown, canMove):
 		velocity.y += GRAVITY
 
 func rotateToWall(floorNormal1, floorNormal2):
-	if(!floorRayCast.is_colliding()):
+	if(!floorRayCast.is_colliding() || web_climb.get_overlapping_areas().size() > 0):
 		return
 	
 	var floorDirection = floorNormal1.direction_to(floorNormal2).normalized()
@@ -258,6 +266,7 @@ func takeDamage(damage):
 		respawn()
 
 func respawn():
+	bitingObject = null
 	position = respawnLocation
 	HP = maxHP
 	if(currentWeb != null):
